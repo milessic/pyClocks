@@ -1,5 +1,5 @@
-from src.clocks import ClocksApp
-from PyQt5.QtWidgets import QApplication
+from src.app import ClocksApp
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 import sys
 import os
 import json
@@ -16,7 +16,11 @@ if __name__ == "__main__":
             continue
     window = ClocksApp(
             timers_data_path=timers_path,
-            clocks_app_folder_path=os.path.join(str(os.getenv('HOME')),".pyclocks/"))
+            clocks_app_folder_path=os.path.join(str(os.getenv('HOME')),".pyclocks/"),
+            use_system_top_nav=False
+            )
+    # setup tray
+    # run app
     window.show()
     sys.exit(app.exec_())
 exit()
