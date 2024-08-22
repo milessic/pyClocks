@@ -8,4 +8,6 @@ App provides possibility to have multiple timers!
 ## Operating with timers from system toolbar
 You don't have to open the app to start/stop/track your time!
 
+## Download
+Currently there are no ready packages available! You can run it from source tho!
 
