@@ -9,3 +9,5 @@ App provides possibility to have multiple timers!
 You don't have to open the app to start/stop/track your time!
 
 
+> [!NOTE]
+> This is from README.md
