@@ -6,7 +6,7 @@ setTargetToActicleA();
 	handleResize();
 }
 function updateActive(){
-	let current_page = document.location.pathname.replace(/\//g, "")
+	let current_page = document.location.pathname.replace(/\pyClocks/g,"").replace(/\//g, "")
 	if (!current_page) { current_page = "home" }
 	document.getElementById("sidebar" + current_page).classList.add("active")
 }
