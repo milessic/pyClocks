@@ -1,13 +1,16 @@
-## Track your activities with pyClocks
-pyClocks is a simple, lightweight PyQt5 application to manage your activities.
+# Track your activities with PyClockss
+PyClockss is a simple, lightweight PyQt5 application to track your activities.
 
-## Key features
-### Multiple timers
-App provides possibility to have multiple timers!
+Please go to [PyClocks web page](https://milessic.github.io/pyClockss/downloads/)
 
-### Operating with timers from system toolbar
-You don't have to open the app to start/stop/track your time!
+# Environment setup
+ - Instal python3.12
+ - install requirements.txt
+ That's all!
 
-### Download
-Currently there are no ready packages available! You can run it from source tho!
+# Contributing
+If you want to contribute, please write to pyclocks@gmail.com.
+
+# Downloads
+Please see [PyClockss downloads page](https://milessic.github.io/pyClocks/downloads/)
 
