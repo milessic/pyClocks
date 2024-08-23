@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }}</title>
-  <link rel="stylesheet" href="{{ '/assets/styles.css' | relative_url }}">
-  <link rel="icon" type="image/png" href="{{ '/assets/favicon.ico' | relative_url }}">
-<script src="{{ '/assets/scripts.js' | relative_url }}"></script>
+  <link rel="stylesheet" href="{{ '/assets/styles.css' | absolute_url}}">
+  <link rel="icon" type="image/png" href="{{ '/assets/favicon.ico' | absolute_url}}">
+<script src="{{ '/assets/scripts.js' | absolute_url}}"></script>
 </head>
 <body onresize="handleResize()">
 	<!--
