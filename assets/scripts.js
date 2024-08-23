@@ -8,9 +8,6 @@ setTargetToActicleA();
 function updateActive(){
 	let current_page = document.location.pathname.replace(/\//g, "")
 	if (!current_page) { current_page = "home" }
-	console.log(current_page)
-	const element = document.getElementById("sidebar" + current_page)
-	console.log(element)
 	document.getElementById("sidebar" + current_page).classList.add("active")
 }
 
