@@ -4,9 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }}</title>
+  <!-- FOR DEVELOPMENT (I don't have time right now to figure how does it work
   <link rel="stylesheet" href="{{ '/assets/styles.css' | prepend: site.baseurl }}">
   <link rel="icon" type="image/png" href="{{ '/assets/favicon.ico' | prepend: site.baseurl}}">
   <script src="{{ '/assets/scripts.js' | prepend: site.baseurl }}"></script>
+  -->
+  <link rel="stylesheet" href="{{ 'pyClocks/assets/styles.css' | prepend: site.baseurl }}">
+  <link rel="icon" type="image/png" href="{{ 'pyClocks/assets/favicon.ico' | prepend: site.baseurl}}">
+  <script src="{{ 'pyClocks/assets/scripts.js' | prepend: site.baseurl }}"></script>
 </head>
 <body onresize="handleResize()">
 	<!--
