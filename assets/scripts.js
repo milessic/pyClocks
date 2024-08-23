@@ -8,12 +8,14 @@ setTargetToActicleA();
 function updateActive(){
 	let current_page = document.location.pathname.replace(/\pyClocks/g,"").replace(/\//g, "")
 	if (!current_page) { current_page = "home" }
-	document.getElementById("sidebar" + current_page).classList.add("active")
+	let element = document.getElementById("sidebar" + current_page)
+	if ( !element ){ return }
+	element.classList.add("active")
 }
 
 function setTargetToActicleA(){
 	const elements = document.querySelectorAll("article * a");
-	elements.forEach((e) => e.setAttribute("target", "_blank"))
+	elements.forEach((e) => { if (!(e.classList.contains("postLink"))){e.setAttribute("target", "_blank")}})
 }
 
 function setMobileView(){
