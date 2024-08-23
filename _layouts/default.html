@@ -6,19 +6,46 @@
   <title>{{ page.title }}</title>
   <link rel="stylesheet" href="{{ '/assets/styles.css' | relative_url }}">
   <link rel="icon" type="image/png" href="{{ '/assets/favicon.ico' | relative_url }}">
+<script src="{{ '/assets/scripts.js' | relative_url }}"></script>
 </head>
-<body>
+<body onresize="handleResize()">
+	<!--
   <div class="sidebar">
     <h2>Sidebar</h2>
     <ul>
       <li><a href="{{ '/' | relative_url }}">Home</a></li>
       <li><a href="{{ '/about' | relative_url }}">About</a></li>
-      <!-- Add more links here -->
     </ul>
   </div>
-  <div class="content">
-    {{ content }}
-  </div>
+  -->
+	<div id="main" class="contentDiv">
+		<div id="postsDiv" class="sidebar">
+			<span class="sidebarItem"><img src="{{ "assets/topnavlogo.png" | relative_url}}"></span>
+			<h2 class="sidebarItem"><a id="sidebarhome" href="/">Home</a></h2>
+			<h2 class="sidebarItem"><a id="sidebardownloads" href="/downloads">Download Now!</a></h2>
+			<h2 class="sidebarItem"><a id="sidebarposts"href="/posts">Posts</a></h2>
+			{% for post in site.categories.release %}
+			<h3 class="sidebarItem"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+			{% break %}
+			{% endfor %}
+  		</div>
+  		<div id="mainContent" class="content" onClick="handleMainContentClick()">
+  			<nav>
+				<span id="logoContent"><img src="{{ "assets/topnavlogo.png" | relative_url}}"></span>
+				<h1><span id="py">Py</span><span id="clocks">Clocks</span></h1>
+			</nav>
+			<div class="content2">
+    			{{ content }}
+			</div>
+		</div>
+		<div id="hamburgerClosed" class="hamburger" onClick="showSidebar()">
+			<div class="hambars">
+				<div class="hambar"></div>
+				<div class="hambar"></div>
+				<div class="hambar"></div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
 
