@@ -17,7 +17,7 @@ from PyQt5.QtCore import Qt
 class SettingsController(QMainWindow):
     fields = [
             [
-                "Use System Topbar",
+                "Use System Topbar (not recommended)",
                 "combobox",
                 "usesystemtopbar",
                 ["Yes", "No"]
@@ -46,12 +46,17 @@ class SettingsController(QMainWindow):
         super().__init__()
         self.app = app
         self.icon_topnav_path = self.app.icon_topnav_path
-        self.custom_top_nav = custom_top_nav
+        self.setWindowIcon(self.app.icon)
+        self.custom_top_nav = self.app.custom_top_nav
         self.app_name = self.app.app_name + " Settings"
         self.initUi()
         if self.custom_top_nav:
             self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
 
+    # def __del__(self):
+        # TODO make additional app that will run and show QMessageBox in this case
+        #if not self.custom_top_nav:
+        #    QMessageBox.critical(self, "PyClocks Info", "Closing settings closes also app if system topbar is used!")
 
     def initUi(self):
         self.setWindowTitle(self.app_name)
@@ -82,7 +87,7 @@ class SettingsController(QMainWindow):
         self.setup_form()
 
     def setup_form(self):
-        self.form_layout = QVBoxLayout()
+        self.form_layout = QVBoxLayout(self.settings_frame)
         for field in self.fields:
             field_layout = QHBoxLayout()
             field_label = QLabel(field[0], self)
@@ -92,7 +97,7 @@ class SettingsController(QMainWindow):
                 match field_default_value:
                     case True:
                         field_default_value = "Yes"
-                    case Fase:
+                    case False:
                         field_default_value = "No"
             elif isinstance(field_default_value, int):
                 field_default_value = str(field_default_value)
@@ -119,7 +124,8 @@ class SettingsController(QMainWindow):
             self.form_layout.addLayout(field_layout)
         self.form_btn = QPushButton("Save settings", self)
         self.form_btn.clicked.connect(self._update_config)
-        self.main_layout.addLayout(self.form_layout)
+        self.form_btn.setMaximumWidth(150)
+        self.form_layout.addWidget(self.form_btn, alignment=Qt.AlignLeft)
 
     def _update_config(self):
         # read inputs
@@ -163,8 +169,10 @@ class SettingsController(QMainWindow):
             event.accept()
         
 class MyTopNav():
-    def __init__(self, app_window, parent, icon_topnav_path):
+    def __init__(self, app_window, parent, icon_topnav_path, show_settings:bool=False,show_edit:bool=False):
         self.app_window = app_window
+        self.show_settings = show_settings
+        self.show_edit = show_edit
         self.parent = parent
         self.icon_topnav_path = icon_topnav_path
         self.initUi()
@@ -192,14 +200,37 @@ class MyTopNav():
             self.top_nav_right.setContentsMargins(10,0,10,0)
             self.top_nav_right.setSpacing(3)
             self.top_nav_right.setAlignment(Qt.AlignRight)
-            self.close_btn = QPushButton("x", self.parent)
-            self.close_btn.setFixedWidth(25)
-            self.close_btn.setFixedHeight(25)
-            self.close_btn.clicked.connect(self.app_window._close)
+            
+            # edit button
+            if self.show_edit:
+                self.settings_btn = QPushButton("e", self.parent)
+                self.settings_btn.setFixedWidth(25)
+                self.settings_btn.setFixedHeight(25)
+                self.settings_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
+
+            # edit button
+            if self.show_settings:
+                self.edit_btn = QPushButton("s", self.parent)
+                self.edit_btn.setFixedWidth(25)
+                self.edit_btn.setFixedHeight(25)
+                self.edit_btn.clicked.connect(lambda: self.app_window.show_settings())
+
+            # minimize button
             self.minimize_btn = QPushButton("-", self.parent)
             self.minimize_btn.setFixedWidth(25)
             self.minimize_btn.setFixedHeight(25)
             self.minimize_btn.clicked.connect(lambda: self.app_window._minimize())
+
+            # close button
+            self.close_btn = QPushButton("x", self.parent)
+            self.close_btn.setFixedWidth(25)
+            self.close_btn.setFixedHeight(25)
+            self.close_btn.clicked.connect(self.app_window._close)
+
+            # place widgets
+            if self.show_settings:
+                self.top_nav_right.addWidget(self.edit_btn, alignment=Qt.AlignRight)
+                self.top_nav_right.addWidget(self.settings_btn, alignment=Qt.AlignRight)
             self.top_nav_right.addWidget(self.minimize_btn, alignment=Qt.AlignRight)
             self.top_nav_right.addWidget(self.close_btn, alignment=Qt.AlignRight)
 

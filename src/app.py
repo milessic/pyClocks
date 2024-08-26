@@ -131,7 +131,7 @@ class ClocksApp(QMainWindow):
             }
             """
             )
-            self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path)
+            self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path, True, True)
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
         self.timers_frame = QFrame(self)
@@ -160,6 +160,9 @@ class ClocksApp(QMainWindow):
         self.tray.setContextMenu(self.tray_menu)
         self.tray.setIcon(self.icon)
         self.tray.show()
+
+    def _control_edit_mode(self):
+        print("Edit mode Not implemented")
 
     def createClock(self, timer_data:dict):
         self.timer_i += 1
