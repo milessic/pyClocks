@@ -5,6 +5,7 @@ from datetime import (
         )
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import (
+        QLineEdit,
         QFrame,
         QPushButton,
         QVBoxLayout,
@@ -17,6 +18,21 @@ from PyQt5.QtCore import (
         )
 
 class Clock:
+    to_be_destroyed = False
+    edit_mode = False
+    timer_stylesheet_base = (""
+            "font-size: 14pt;"
+                           )
+    timer_stylesheet_edit_disabled = timer_stylesheet_base + (""
+                             "background:transparent;"                
+                             #"border:2px solid #708ebf;"
+    )
+    timer_stylesheet_edit_enabled =timer_stylesheet_base + (""
+                             "background:transparent;"                
+                             "border:2px solid #708ebf;"
+                                                            "border-radius: 5px;"
+
+    )
     def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_object=None):
         self.parent = parent
         self.timer_id = timer_id
@@ -38,37 +54,47 @@ class Clock:
                 "border-style: solid;"
                 "border-radius: 4;"
                 "}"
-                ".QLabel{"
+                ".QLineEdit{"
+                "background:transparent;"
                 "font-size: 15pt"
                 "}"
                 )
         self.clock_layout = QVBoxLayout(self.clock_frame)
         # setup label
-        self.clock_name = QLabel(self.name, self.clock_frame)
+        self.clock_name = QLineEdit(self.name, self.clock_frame)
+        self.clock_name.setAlignment(Qt.AlignCenter)
+        self.clock_name.textChanged.connect(self._update_clock_name)
         # pack label
         self.clock_layout.addWidget(self.clock_name, alignment=Qt.AlignCenter)
         # setup timer
         self.timer = QTimer(self.clock_frame)
         self.timer.timeout.connect(lambda: self._show_time())
         self.timer.start(100)
-        self.timer_display = QLabel("---",self.clock_frame)
+        self.timer_display = QLineEdit("---",self.clock_frame)
+        self.timer_display.setAlignment(Qt.AlignCenter)
+        self.timer_display.setDisabled(True)
+        self.timer_display.setStyleSheet(self.timer_stylesheet_edit_disabled)
         self.timer_display.setObjectName(f"clockTimer{self.timer_id}")
         # pack timer
         self.clock_layout.addWidget(self.timer_display, alignment=Qt.AlignCenter)
         # setup buttons
-        self.start_btn = QPushButton("Start", self.clock_frame)
-        self.start_btn.clicked.connect(lambda: self._start_time())
-        self.stop_btn = QPushButton("Stop", self.clock_frame)
-        self.stop_btn.clicked.connect(lambda: self._stop_time())
+        self.control_time_btn = QPushButton("Start", self.clock_frame)
+        self.control_time_btn.clicked.connect(lambda: self._control_time())
+        #self.stop_btn = QPushButton("Stop", self.clock_frame)
+        #self.stop_btn.clicked.connect(lambda: self._stop_time())
         self.reset_btn = QPushButton("Reset", self.clock_frame)
         self.reset_btn.clicked.connect(lambda: self._reset_time())
         # pack buttson
-        self.clock_layout.addWidget(self.start_btn)
-        self.clock_layout.addWidget(self.stop_btn)
+        self.clock_layout.addWidget(self.control_time_btn)
+        #self.clock_layout.addWidget(self.stop_btn)
         self.clock_layout.addWidget(self.reset_btn)
         # append clock
         self.parent.addWidget(self.clock_frame)
-        self._update_timer_color()
+        self.delete_btn = QPushButton("X", self.clock_frame)
+        self.delete_btn.clicked.connect(self._set_to_destroy)
+        self.delete_btn.setGeometry(1,1,30,30)
+        self.delete_btn.hide()
+        self._update_timer_stylesheet()
 
     def _show_time(self):
         if self.isActive:
@@ -81,6 +107,26 @@ class Clock:
         time_as_int = int(self.count / 10)
         return datetime.fromtimestamp(time_as_int, timezone.utc).strftime("%H:%M:%S")
 
+    def _control_edit_mode(self):
+        if self.edit_mode:
+            self._disable_edit_mode()
+        else:
+            self._enable_edit_mode()
+
+    def _disable_edit_mode(self):
+        self.timer_display.setEnabled(False)
+        self.clock_name.setEnabled(False)
+        self.delete_btn.hide()
+        self.edit_mode = False
+        self._update_timer_stylesheet()
+
+    def _enable_edit_mode(self):
+        self.timer_display.setEnabled(True)
+        self.clock_name.setEnabled(True)
+        self.delete_btn.show()
+        self.edit_mode = True
+        self._update_timer_stylesheet()
+
     def _control_time(self):
         if self.isActive:
             self._stop_time()
@@ -88,6 +134,14 @@ class Clock:
             self._start_time()
         if self.tray_object is None:
             return
+
+    def _set_to_destroy(self):
+        self.to_be_destroyed = True
+        self.clock_frame.hide()
+        #timer.clock_frame.destroy()
+
+    def _update_clock_name(self):
+        self.name = self.clock_name.text()
 
     def _update_tray_object(self):
         if self.tray_object is None:
@@ -97,19 +151,24 @@ class Clock:
 
     def _start_time(self):
         self.isActive = True
-        self._update_timer_color()
+        self._update_timer_stylesheet()
+        self.control_time_btn.setText("Stop")
 
     def _stop_time(self):
         self.isActive = False
-        self._update_timer_color()
+        self._update_timer_stylesheet()
+        self.control_time_btn.setText("Start")
 
     def _reset_time(self):
         self.count = 0
         
-    def _update_timer_color(self):
+    def _update_timer_stylesheet(self):
         enabled = "#FFFFFF"
         disabled = "#989898"
-        stylesheet = ""
+        if self.edit_mode:
+            stylesheet = self.timer_stylesheet_edit_enabled
+        else:
+            stylesheet = self.timer_stylesheet_edit_disabled
         tray_font = QtGui.QFont()
         if self.isActive:
             stylesheet += "color: %s"%enabled
@@ -118,6 +177,7 @@ class Clock:
             stylesheet += "color: %s"%disabled
             tray_stylesheet = "font-weight: normal"
         self.timer_display.setStyleSheet(stylesheet)
+        self.clock_name.setStyleSheet(stylesheet)
         if self.tray_object is None:
             return
         self.tray_object.setFont(tray_font) # FIXME this doesnt work well

@@ -39,6 +39,7 @@ class ClocksApp(QMainWindow):
             }
     timer_i = -1
     start_date = datetime.now().strftime("%y-%m-%d")
+    edit_mode = False
 
     def __init__(
             self,
@@ -139,6 +140,7 @@ class ClocksApp(QMainWindow):
         for timer in self.timers_data:
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
+        self.add_new_timer_btn = QPushButton
 
     def initSettings(self):
         self.settings_window = SettingsController(self)
@@ -162,7 +164,21 @@ class ClocksApp(QMainWindow):
         self.tray.show()
 
     def _control_edit_mode(self):
-        print("Edit mode Not implemented")
+        if self.edit_mode:
+            for timer in self.timers:
+                timer._control_edit_mode()
+                self._check_timers_for_deletion()
+
+
+
+    def _check_timers_for_deletion(self):
+        for i,timer in enumerate(self.timers):
+            if timer.to_be_destroyed:
+                timer.clock_frame.hide()
+                timer.clock_frame.destroy()
+                self.timers.pop(i)
+                
+
 
     def createClock(self, timer_data:dict):
         self.timer_i += 1
