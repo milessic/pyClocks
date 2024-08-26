@@ -37,7 +37,6 @@ class ClocksApp(QMainWindow):
     default_config = {
             "always-on-top": True
             }
-    config = {}
     timer_i = -1
     start_date = datetime.now().strftime("%y-%m-%d")
 
