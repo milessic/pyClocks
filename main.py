@@ -21,6 +21,5 @@ if __name__ == "__main__":
             )
     # setup tray
     # run app
-    window.show()
     sys.exit(app.exec_())
 exit()

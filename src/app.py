@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from configparser import ConfigParser
 import json
 import sys
 from datetime import (
@@ -25,6 +26,8 @@ from PyQt5.QtCore import (
         )
 import os
 from src.clocks import Clock
+from src.elements import MyTopNav, SettingsController
+from src.config import Config
 
 class ClocksApp(QMainWindow):
     dragging = False
@@ -34,7 +37,6 @@ class ClocksApp(QMainWindow):
     default_config = {
             "always-on-top": True
             }
-    config = {}
     timer_i = -1
     start_date = datetime.now().strftime("%y-%m-%d")
 
@@ -46,7 +48,8 @@ class ClocksApp(QMainWindow):
             use_system_top_nav:bool=True,
             ):
         super().__init__()
-        self.custom_top_nav = not use_system_top_nav
+        self.config = Config()
+        self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
         self.icon_topnav_path = os.path.join(os.path.dirname(__file__),"icon_27.png")
         self.icon = QtGui.QIcon()
@@ -55,11 +58,11 @@ class ClocksApp(QMainWindow):
         self.clocks_app_folder_path = clocks_app_folder_path
         self.timers_data_path = timers_data_path
         self.history_file = os.path.join(self.clocks_app_folder_path, "history_" + self.start_date + os.path.basename(self.timers_data_path))
+        timers_data = {}
         try:
             timers_data = json.load(open(self.timers_data_path, "r"))
         except FileNotFoundError:
             QMessageBox.critical(self, "Could not find Clocks file", f"Could not find clocks file under '{self.timers_data_path}'!")
-            exit()
         except Exception as e:
             QMessageBox.critical(self, "Could not load Clocks file", f"Could not laod clocks file located under '{self.timers_data_path}' due to {type(e).__name__}: {e}!")
             exit()
@@ -76,7 +79,10 @@ class ClocksApp(QMainWindow):
             self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
         else:
             self.setWindowFlags(Qt.Tool)
-        self.show()
+        self.setMinimumSize(130,231)
+        if self.config.openwindowonstart:
+            self.show()
+        self.initSettings()
         self.initTray()
 
     def setupTimers(self, timers_data:list[dict]):
@@ -125,42 +131,7 @@ class ClocksApp(QMainWindow):
             }
             """
             )
-            self.top_nav = QHBoxLayout(self.top_nav_frame)
-            self.top_nav.setContentsMargins(0,0,0,0)
-            # setup left side
-            self.top_nav_left = QHBoxLayout()
-            self.top_nav_left.setAlignment(Qt.AlignLeft)
-            self.top_nav_left.setContentsMargins(10, 0, 10, 0)
-            self.top_nav_icon_pixmap = QtGui.QPixmap()
-            self.top_nav_icon_pixmap.load(self.icon_topnav_path)
-            #self.top_nav_icon_pixmap.scaledToHeight(30)
-            #self.top_nav_icon_pixmap.scaled(10, 10)
-            self.top_nav_icon = QLabel()
-            self.top_nav_icon.setPixmap(self.top_nav_icon_pixmap)
-            self.top_nav_name = QLabel(self.app_name, None)
-
-            self.top_nav_left.addWidget(self.top_nav_icon)
-            self.top_nav_left.addWidget(self.top_nav_name)
-
-            # setup right side
-            self.top_nav_right = QHBoxLayout()
-            self.top_nav_right.setContentsMargins(10,0,10,0)
-            self.top_nav_right.setSpacing(3)
-            self.top_nav_right.setAlignment(Qt.AlignRight)
-            self.close_btn = QPushButton("x", self.top_nav_frame)
-            self.close_btn.setFixedWidth(25)
-            self.close_btn.setFixedHeight(25)
-            self.close_btn.clicked.connect(self._close)
-            self.minimize_btn = QPushButton("-", self.top_nav_frame)
-            self.minimize_btn.setFixedWidth(25)
-            self.minimize_btn.setFixedHeight(25)
-            self.minimize_btn.clicked.connect(lambda: self._minimize())
-            self.top_nav_right.addWidget(self.minimize_btn, alignment=Qt.AlignRight)
-            self.top_nav_right.addWidget(self.close_btn, alignment=Qt.AlignRight)
-
-            # add Layouts
-            self.top_nav.addLayout(self.top_nav_left)
-            self.top_nav.addLayout(self.top_nav_right)
+            self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path, True, True)
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
         self.timers_frame = QFrame(self)
@@ -169,22 +140,29 @@ class ClocksApp(QMainWindow):
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
 
+    def initSettings(self):
+        self.settings_window = SettingsController(self)
+
     def initTray(self):
         self.tray = QSystemTrayIcon()
         self.tray_menu = QMenu()
         #show_action = QAction("Show", self)
         #show_action.triggered.connect(self.show_window)
-        self.tray_menu.addAction("Show app", self.show_window)
-        self.tray_menu.addAction("Exit", sys.exit)
-        self.tray_menu.addSeparator()
         for t in self.timers:
             clock_action = QAction(str(t), self)
             clock_action.triggered.connect(t._control_time)
             self.tray_menu.addAction(clock_action)
             t.tray_object = clock_action
+        self.tray_menu.addSeparator()
+        self.tray_menu.addAction("Show app", self.show_window)
+        self.tray_menu.addAction("Settings", self.show_settings)
+        self.tray_menu.addAction("Exit", sys.exit)
         self.tray.setContextMenu(self.tray_menu)
         self.tray.setIcon(self.icon)
         self.tray.show()
+
+    def _control_edit_mode(self):
+        print("Edit mode Not implemented")
 
     def createClock(self, timer_data:dict):
         self.timer_i += 1
@@ -219,6 +197,10 @@ class ClocksApp(QMainWindow):
                 validation_passed = False
         return validation_passed
 
+    def show_settings(self):
+        self.initSettings()
+        self.settings_window.show()
+
     def show_window(self):
         #if self.isMinimized():
         #    self.showNormal()
@@ -227,7 +209,6 @@ class ClocksApp(QMainWindow):
         self.activateWindow()
 
     def _minimize(self):
-        print("minimized")
         #self.showNormal()
         self.showMinimized()
         #self.hide()
