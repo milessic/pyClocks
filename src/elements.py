@@ -87,17 +87,31 @@ class SettingsController(QMainWindow):
             field_layout = QHBoxLayout()
             field_label = QLabel(field[0], self)
             field_label.setFixedWidth(230)
+            field_default_value = getattr(self.app.config,field[2])
+            if isinstance(field_default_value, bool):
+                match field_default_value:
+                    case True:
+                        field_default_value = "Yes"
+                    case Fase:
+                        field_default_value = "No"
+            elif isinstance(field_default_value, int):
+                field_default_value = str(field_default_value)
             match field[1]:
                 case "checkbox":
                     element = QCheckBox(self)
+                    element.setChecked(field_default_value)
                 case "input":
                     element = QLineEdit(self)
+                    element.setText(field_default_value)
                 case "combobox":
                     element = QComboBox(self)
                     for opt in field[3]:
                         element.addItem(opt)
+                    index = element.findText(field_default_value)
+                    element.setCurrentIndex(index)
                 case _:
                     QMessageBox.critical(self, "Error", f"Cannot set field '{field}'!")
+                    return
             element.setObjectName(field[2])
             field.append(element)
             field_layout.addWidget(field_label)
