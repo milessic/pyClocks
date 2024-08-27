@@ -7,3 +7,4 @@
 - [ ] - add custom icons for topnav
 - [ ] - add analog clock
 - [ ] - add language change
+- [ ] - make app border rounded
