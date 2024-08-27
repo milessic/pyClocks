@@ -49,8 +49,10 @@ class ClocksApp(QMainWindow):
             timers_data_path:str,
             config_data:dict | None = None,
             use_system_top_nav:bool=True,
+            nerd_font:str|None=None
             ):
         super().__init__()
+        self.nerd_font = nerd_font
         self.edit_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "edit_icon.svg"))
         #self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.png"))
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
@@ -151,11 +153,14 @@ class ClocksApp(QMainWindow):
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
         self.add_new_timer_btn = QPushButton("", self.main_widget)
+        if self.nerd_font is not None:
+            self.add_new_timer_btn.setFont(QtGui.QFont(self.nerd_font))
         self.add_new_timer_btn.hide()
         self.add_new_timer_btn.clicked.connect(lambda: self.createClock({"Name":"","Color":generate_random_hex(), "Time":0,"Active":False}, True, True))
         #self.add_new_timer_btn.setFlat(True)
         #self.add_new_timer_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
         self.add_new_timer_btn.setStyleSheet("font-size: 30pt;")
+        self.setMaximumWidth(800)
 
 
     def initNoClocksUi(self):
@@ -184,6 +189,7 @@ class ClocksApp(QMainWindow):
         #show_action.triggered.connect(self.show_window)
         self.tray_menu.addSeparator()
         self.tray_menu.addAction("Show app", self.show_window)
+        self.tray_menu.addAction("Edit Mode", self._control_edit_mode)
         self.tray_menu.addAction("Settings", self.show_settings)
         self.tray_menu.addAction("Exit", sys.exit)
         for t in self.timers:
@@ -203,7 +209,10 @@ class ClocksApp(QMainWindow):
     def _control_edit_mode(self):
         # set + button geometry
         appw, apph = (self.width()-70, self.height())
-        self.add_new_timer_btn.setGeometry(appw, self.topnav_height + 10, 60,apph-45)
+        try:
+            self.add_new_timer_btn.setGeometry(appw, self.topnav_height + 10, 60,apph-45)
+        except AttributeError:
+            self.add_new_timer_btn.setGeometry(appw, 10, 60,apph-20)
         # set edit mode
         if self.edit_mode:
             self.edit_mode = False
@@ -271,7 +280,6 @@ class ClocksApp(QMainWindow):
         return validation_passed
 
     def show_settings(self):
-        self.initSettings()
         self.settings_window.show()
 
     def show_window(self):

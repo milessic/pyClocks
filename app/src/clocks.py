@@ -19,6 +19,7 @@ from PyQt5.QtCore import (
         )
 
 class Clock:
+    clock_is_editable = False
     tray_action = None
     to_be_destroyed = False
     edit_mode = False
@@ -32,7 +33,7 @@ class Clock:
     timer_stylesheet_edit_enabled =timer_stylesheet_base + (""
                              "background:transparent;"                
                              "border:2px solid #708ebf;"
-                                                            "border-radius: 5px;"
+                              "border-radius: 5px;"
 
     )
     def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_action=None, tray_object=None):
@@ -63,10 +64,13 @@ class Clock:
         self.timer = QTimer(self.clock_frame)
         self.timer.timeout.connect(lambda: self._show_time())
         self.timer.start(100)
-        self.timer_display = QLineEdit("---",self.clock_frame)
-        self.timer_display.setAlignment(Qt.AlignCenter)
-        self.timer_display.setDisabled(True)
-        self.timer_display.setStyleSheet(self.timer_stylesheet_edit_disabled)
+        if self.clock_is_editable:
+            self.timer_display = QLineEdit("---",self.clock_frame)
+            self.timer_display.setAlignment(Qt.AlignCenter)
+            self.timer_display.setDisabled(True)
+            self.timer_display.setStyleSheet(self.timer_stylesheet_edit_disabled)
+        else:
+            self.timer_display = QLabel("---", self.clock_frame)
         self.timer_display.setObjectName(f"clockTimer{self.timer_id}")
         # pack timer
         self.clock_layout.addWidget(self.timer_display, alignment=Qt.AlignCenter)
@@ -91,6 +95,7 @@ class Clock:
         self.change_color_btn.setGeometry(1, 35, 30,30)
         self.change_color_btn.hide()
         self.change_color_btn.clicked.connect(self._open_color_picker)
+        self.default_enabled_color = self.change_color_btn.palette().text().color().name()
         self._update_timer_stylesheet()
 
     def _show_time(self):
@@ -180,7 +185,7 @@ class Clock:
         self.count = 0
         
     def _update_timer_stylesheet(self):
-        enabled = "#FFFFFF"
+        enabled = self.default_enabled_color
         disabled = "#989898"
         if self.edit_mode:
             stylesheet = self.timer_stylesheet_edit_enabled

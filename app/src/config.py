@@ -7,6 +7,16 @@ from pathlib import Path
 
 
 class Config:
+    default_config = """[GENERAL]
+applanguage = en
+noidea = confusediam
+usesystemtopbar = 0
+
+[DISPLAY]
+openwindowonstart = 1
+clockdisplaymode = digital
+
+    """
     def __init__(self):
         self.platform = platform.system()
         match self.platform:
@@ -21,6 +31,13 @@ class Config:
                 raise NotImplemented("pyClocks is supported for Linux only for now!")
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
+        if len(self.c) < 2:
+            del self.c
+            print("Didn't detect valid config file, creating default one")
+            with open(self.config_path, "w") as f:
+                f.write(self.default_config)
+            self.c = configparser.ConfigParser()
+            self.c.read(self.config_path)
 
         # GENERAL
         self.applanguage = self.c["GENERAL"]["applanguage"]

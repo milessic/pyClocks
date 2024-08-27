@@ -122,10 +122,16 @@ class SettingsController(QMainWindow):
             field_layout.addWidget(field_label)
             field_layout.addWidget(element)
             self.form_layout.addLayout(field_layout)
+        self.buttons_layout = QHBoxLayout()
         self.form_btn = QPushButton("Save settings", self)
         self.form_btn.clicked.connect(self._update_config)
         self.form_btn.setMaximumWidth(150)
-        self.form_layout.addWidget(self.form_btn, alignment=Qt.AlignLeft)
+        self.settings_saved = QLabel("Settings saved", self)
+        self.settings_saved.setStyleSheet("color: green")
+        self.settings_saved.hide()
+        self.buttons_layout.addWidget(self.form_btn, alignment=Qt.AlignLeft)
+        self.buttons_layout.addWidget(self.settings_saved, alignment=Qt.AlignLeft)
+        self.form_layout.addLayout(self.buttons_layout)
 
     def _update_config(self):
         # read inputs
@@ -146,12 +152,16 @@ class SettingsController(QMainWindow):
             setattr(self.app.config, field[2], value)
         # save inputs
         self.app.config.update_config_file()
+        # show user that it happened
+        self.settings_saved.show()
+
     def _close(self):
+        self.settings_saved.hide()
         self.destroy()
-        pass
 
     def _minimize(self):
         pass
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragging = True
@@ -179,6 +189,7 @@ class MyTopNav():
 
     def initUi(self):
             self.top_nav = QHBoxLayout(self.parent)
+            
             self.top_nav.setContentsMargins(0,0,0,0)
             # setup left side
             self.top_nav_left = QHBoxLayout()
@@ -191,6 +202,7 @@ class MyTopNav():
             self.top_nav_icon = QLabel()
             self.top_nav_icon.setPixmap(self.top_nav_icon_pixmap)
             self.top_nav_name = QLabel(self.app_window.app_name, None)
+            self.top_nav_name.setStyleSheet("color: #dfdfdf")
 
             self.top_nav_left.addWidget(self.top_nav_icon)
             self.top_nav_left.addWidget(self.top_nav_name)
@@ -204,10 +216,12 @@ class MyTopNav():
             # edit button
             if self.show_edit:
                 self.edit_btn = QPushButton("", self.parent)
+                #print(self.edit_btn.palette().text().color().name())
                 #self.edit_btn.setIcon(self.app_window.settings_icon)
                 self.edit_btn.setFixedWidth(25)
                 self.edit_btn.setFixedHeight(25)
                 self.edit_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
+                self.edit_btn.setStyleSheet("color: #dfdfdf")
 
             # edit button
             if self.show_settings:
@@ -216,18 +230,21 @@ class MyTopNav():
                 self.settings_btn.setFixedWidth(25)
                 self.settings_btn.setFixedHeight(25)
                 self.settings_btn.clicked.connect(lambda: self.app_window.show_settings())
+                self.settings_btn.setStyleSheet("color: #dfdfdf")
 
             # minimize button
             self.minimize_btn = QPushButton("󰖰", self.parent)
             self.minimize_btn.setFixedWidth(25)
             self.minimize_btn.setFixedHeight(25)
             self.minimize_btn.clicked.connect(lambda: self.app_window._minimize())
+            self.minimize_btn.setStyleSheet("color: #dfdfdf")
 
             # close button
             self.close_btn = QPushButton("", self.parent)
             self.close_btn.setFixedWidth(25)
             self.close_btn.setFixedHeight(25)
             self.close_btn.clicked.connect(self.app_window._close)
+            self.close_btn.setStyleSheet("color: #dfdfdf")
 
             # place widgets
             if self.show_settings:
