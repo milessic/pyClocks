@@ -17,18 +17,13 @@ openwindowonstart = 1
 clockdisplaymode = digital
 
     """
-    def __init__(self):
+    def __init__(self, app_path):
         self.platform = platform.system()
-        match self.platform:
-            case "Linux":
-                self.home_path= f"{os.getenv('HOME')}"
-                self.pyclocks_path = Path(f"{self.home_path}/.config/pyclocks")
-                self.pyclocks_path.mkdir(parents=True, exist_ok=True)
-                self.config_path = Path(self.pyclocks_path, ".pyclocks.ini")
-            #case "Windows":
-            #case "Darwin":
-            case _:
-                raise NotImplemented("pyClocks is supported for Linux only for now!")
+        self.pyclocks_path = Path(app_path)
+        self.pyclocks_path.mkdir(parents=True, exist_ok=True)
+        self.config_path = Path(self.pyclocks_path, ".pyclocks.ini")
+        #case "Windows":
+        #case "Darwin":
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
         if len(self.c) < 2:

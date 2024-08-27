@@ -56,14 +56,14 @@ class ClocksApp(QMainWindow):
         self.edit_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "edit_icon.svg"))
         #self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.png"))
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
-        self.config = Config()
+        self.clocks_app_folder_path = clocks_app_folder_path
+        self.config = Config(self.clocks_app_folder_path)
         self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
         self.icon_topnav_path = os.path.join(os.path.dirname(__file__),"icon_27.png")
         self.icon = QtGui.QIcon()
         self.icon.addPixmap(QtGui.QPixmap(self.icon_path))
         self.setWindowIcon(self.icon)
-        self.clocks_app_folder_path = clocks_app_folder_path
         self.timers_data_path = timers_data_path
         self.history_file = os.path.join(self.clocks_app_folder_path, "history_" + self.start_date + os.path.basename(self.timers_data_path))
         timers_data = {}
