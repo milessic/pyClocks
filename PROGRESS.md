@@ -1,3 +1,9 @@
-- [ ] - Add clock adding / editing / removing from app level
+- [x] - Add clock adding / editing / removing from app level
 - [ ] - Add dropdown to open recent clock-sets
 - [ ] - Add warning time
+- [ ] - Add saving interval settings
+- [ ] - make edit mode look good
+- [ ] - add menu to open Settings/Edit when system topnav is used
+- [ ] - add custom icons for topnav
+- [ ] - add analog clock
+- [ ] - add language change

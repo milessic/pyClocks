@@ -40,6 +40,7 @@ class ClocksApp(QMainWindow):
     timer_i = -1
     start_date = datetime.now().strftime("%y-%m-%d")
     edit_mode = False
+    top_nav_height = 0
 
     def __init__(
             self,
@@ -133,6 +134,7 @@ class ClocksApp(QMainWindow):
             """
             )
             self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path, True, True)
+            self.topnav_height = self.top_nav_frame.height()
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
         self.timers_frame = QFrame(self)
@@ -140,7 +142,10 @@ class ClocksApp(QMainWindow):
         for timer in self.timers_data:
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
-        self.add_new_timer_btn = QPushButton
+        self.add_new_timer_btn = QPushButton("+", self.main_widget)
+        self.add_new_timer_btn.hide()
+        self.add_new_timer_btn.clicked.connect(lambda: self.createClock({"Name":"","Color":"yellow", "Time":0,"Active":False}, True, True))
+
 
     def initSettings(self):
         self.settings_window = SettingsController(self)
@@ -150,25 +155,42 @@ class ClocksApp(QMainWindow):
         self.tray_menu = QMenu()
         #show_action = QAction("Show", self)
         #show_action.triggered.connect(self.show_window)
-        for t in self.timers:
-            clock_action = QAction(str(t), self)
-            clock_action.triggered.connect(t._control_time)
-            self.tray_menu.addAction(clock_action)
-            t.tray_object = clock_action
         self.tray_menu.addSeparator()
         self.tray_menu.addAction("Show app", self.show_window)
         self.tray_menu.addAction("Settings", self.show_settings)
         self.tray_menu.addAction("Exit", sys.exit)
+        for t in self.timers:
+            self._append_clock_to_tray(t)
         self.tray.setContextMenu(self.tray_menu)
         self.tray.setIcon(self.icon)
         self.tray.show()
 
-    def _control_edit_mode(self):
-        if self.edit_mode:
-            for timer in self.timers:
-                timer._control_edit_mode()
-                self._check_timers_for_deletion()
+    def _append_clock_to_tray(self,t):
+        clock_action = QAction(str(t), self)
+        clock_action.triggered.connect(t._control_time)
+        clock_action.setObjectName(t.name)
+        self.tray_menu.addAction(clock_action)
+        t.tray_object = self.tray_menu 
+        t.tray_action = clock_action
 
+    def _control_edit_mode(self):
+        # set + button geometry
+        appw, apph = (self.width()-40, self.height())
+        self.add_new_timer_btn.setGeometry(appw, self.topnav_height, 30,apph-30)
+        # set edit mode
+        if self.edit_mode:
+            self.edit_mode = False
+        else:
+            self.edit_mode = True
+        # update timers
+        for timer in self.timers:
+            if self.edit_mode:
+                timer._enable_edit_mode()
+                self.add_new_timer_btn.show()
+            else:
+                timer._disable_edit_mode()
+                self._check_timers_for_deletion()
+                self.add_new_timer_btn.hide()
 
 
     def _check_timers_for_deletion(self):
@@ -177,10 +199,11 @@ class ClocksApp(QMainWindow):
                 timer.clock_frame.hide()
                 timer.clock_frame.destroy()
                 self.timers.pop(i)
+                action = self.findChild(QAction, timer.name)
+                self.tray_menu.removeAction(action)
+
                 
-
-
-    def createClock(self, timer_data:dict):
+    def createClock(self, timer_data:dict, enable_edition:bool=False, update_tray:bool=False):
         self.timer_i += 1
         clock = Clock(
                 self.timers_layout, 
@@ -192,6 +215,10 @@ class ClocksApp(QMainWindow):
                 )
         # setup frame and layout
         self.timers.append(clock)
+        if enable_edition:
+            clock._enable_edit_mode()
+        if update_tray:
+            self._append_clock_to_tray(clock)
 
     def setupConfigs(self, config_data:dict):
         for k,v in self.default_config.items():

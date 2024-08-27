@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
         QVBoxLayout,
         QLabel,
         QVBoxLayout,
+        QColorDialog,
         )
 from PyQt5.QtCore import (
         Qt,
@@ -18,6 +19,7 @@ from PyQt5.QtCore import (
         )
 
 class Clock:
+    tray_action = None
     to_be_destroyed = False
     edit_mode = False
     timer_stylesheet_base = (""
@@ -33,13 +35,14 @@ class Clock:
                                                             "border-radius: 5px;"
 
     )
-    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_object=None):
+    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_action=None, tray_object=None):
         self.parent = parent
         self.timer_id = timer_id
         self.name = name
         self.count = count
         self.isActive = isActive
         self.color = color
+        self.tray_action = tray_action
         self.tray_object = tray_object
         self.initUi()
 
@@ -48,17 +51,7 @@ class Clock:
 
     def initUi(self):
         self.clock_frame = QFrame()
-        self.clock_frame.setStyleSheet(".QFrame {"
-                f"border-color: {self.color};"
-                "border-width: 2;"
-                "border-style: solid;"
-                "border-radius: 4;"
-                "}"
-                ".QLineEdit{"
-                "background:transparent;"
-                "font-size: 15pt"
-                "}"
-                )
+        self._update_frame_stylesheet()
         self.clock_layout = QVBoxLayout(self.clock_frame)
         # setup label
         self.clock_name = QLineEdit(self.name, self.clock_frame)
@@ -94,6 +87,10 @@ class Clock:
         self.delete_btn.clicked.connect(self._set_to_destroy)
         self.delete_btn.setGeometry(1,1,30,30)
         self.delete_btn.hide()
+        self.change_color_btn = QPushButton("Color", self.clock_frame)
+        self.change_color_btn.setGeometry(1, 35, 30,30)
+        self.change_color_btn.hide()
+        self.change_color_btn.clicked.connect(self._open_color_picker)
         self._update_timer_stylesheet()
 
     def _show_time(self):
@@ -101,22 +98,17 @@ class Clock:
             self.count += 1
             # save data
         self.timer_display.setText(self._return_time())
-        self._update_tray_object()
+        self._update_tray_action()
 
     def _return_time(self):
         time_as_int = int(self.count / 10)
         return datetime.fromtimestamp(time_as_int, timezone.utc).strftime("%H:%M:%S")
 
-    def _control_edit_mode(self):
-        if self.edit_mode:
-            self._disable_edit_mode()
-        else:
-            self._enable_edit_mode()
-
     def _disable_edit_mode(self):
         self.timer_display.setEnabled(False)
         self.clock_name.setEnabled(False)
         self.delete_btn.hide()
+        self.change_color_btn.hide()
         self.edit_mode = False
         self._update_timer_stylesheet()
 
@@ -124,6 +116,7 @@ class Clock:
         self.timer_display.setEnabled(True)
         self.clock_name.setEnabled(True)
         self.delete_btn.show()
+        self.change_color_btn.show()
         self.edit_mode = True
         self._update_timer_stylesheet()
 
@@ -132,22 +125,46 @@ class Clock:
             self._stop_time()
         else:
             self._start_time()
-        if self.tray_object is None:
+        if self.tray_action is None:
             return
 
     def _set_to_destroy(self):
         self.to_be_destroyed = True
+        self.tray_object.removeAction(self.tray_action)
         self.clock_frame.hide()
         #timer.clock_frame.destroy()
+    
+    def _open_color_picker(self):
+        dialog = QColorDialog(self.clock_frame)
+        dialog.setOption(QColorDialog.ShowAlphaChannel, True)  # Example of setting options
+        if dialog.exec_() == QColorDialog.Accepted:
+            color = dialog.currentColor()
+            if color.isValid():
+                self.color = color.name()
+                self._update_frame_stylesheet()
+
+    def _update_frame_stylesheet(self):
+        self.clock_frame.setStyleSheet(
+                ".QFrame {"
+                f"border-color: {self.color};"
+                "border-width: 2;"
+                "border-style: solid;"
+                "border-radius: 4;"
+                "}"
+                ".QLineEdit{"
+                "background:transparent;"
+                "font-size: 15pt"
+                "}"
+                )
 
     def _update_clock_name(self):
         self.name = self.clock_name.text()
 
-    def _update_tray_object(self):
-        if self.tray_object is None:
+    def _update_tray_action(self):
+        if self.tray_action is None:
             print("Tray object is None!")
             return
-        self.tray_object.setText(str(self))
+        self.tray_action.setText(str(self))
 
     def _start_time(self):
         self.isActive = True
@@ -178,7 +195,7 @@ class Clock:
             tray_stylesheet = "font-weight: normal"
         self.timer_display.setStyleSheet(stylesheet)
         self.clock_name.setStyleSheet(stylesheet)
-        if self.tray_object is None:
+        if self.tray_action is None:
             return
-        self.tray_object.setFont(tray_font) # FIXME this doesnt work well
+        self.tray_action.setFont(tray_font) # FIXME this doesnt work well
 
