@@ -50,6 +50,9 @@ class ClocksApp(QMainWindow):
             use_system_top_nav:bool=True,
             ):
         super().__init__()
+        self.edit_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "edit_icon.svg"))
+        #self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.png"))
+        self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
         self.config = Config()
         self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
@@ -64,7 +67,8 @@ class ClocksApp(QMainWindow):
         try:
             timers_data = json.load(open(self.timers_data_path, "r"))
         except FileNotFoundError:
-            QMessageBox.critical(self, "Could not find Clocks file", f"Could not find clocks file under '{self.timers_data_path}'!")
+            #QMessageBox.critical(self, "Could not find Clocks file", f"Could not find clocks file under '{self.timers_data_path}'!")
+            pass
         except Exception as e:
             QMessageBox.critical(self, "Could not load Clocks file", f"Could not laod clocks file located under '{self.timers_data_path}' due to {type(e).__name__}: {e}!")
             exit()
@@ -139,6 +143,9 @@ class ClocksApp(QMainWindow):
         # create timers
         self.timers_frame = QFrame(self)
         self.timers_layout = QHBoxLayout(self.timers_frame)
+        self.initNoClocksUi()
+        if not len(self.timers_data):
+            self.no_clocks_frame.show()
         for timer in self.timers_data:
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
@@ -146,6 +153,22 @@ class ClocksApp(QMainWindow):
         self.add_new_timer_btn.hide()
         self.add_new_timer_btn.clicked.connect(lambda: self.createClock({"Name":"","Color":"yellow", "Time":0,"Active":False}, True, True))
 
+
+    def initNoClocksUi(self):
+        self.no_clocks_frame = QFrame()
+        self.no_clocks_layout = QHBoxLayout(self.no_clocks_frame)
+        self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode\nand click \"+\" to create one", self.no_clocks_frame)
+        self.no_clocks_frame.setStyleSheet("""
+            .QFrame{
+                border: 3px solid #FFFFFF;
+            }
+            .QLabel{
+                font-size: 12pt;
+            }
+        """)
+        self.no_clocks_layout.addWidget(self.no_clocks_label)
+        self.timers_layout.addWidget(self.no_clocks_frame)
+        self.no_clocks_frame.hide()
 
     def initSettings(self):
         self.settings_window = SettingsController(self)
@@ -180,17 +203,17 @@ class ClocksApp(QMainWindow):
         # set edit mode
         if self.edit_mode:
             self.edit_mode = False
+            self.add_new_timer_btn.hide()
         else:
             self.edit_mode = True
+            self.add_new_timer_btn.show()
         # update timers
         for timer in self.timers:
             if self.edit_mode:
                 timer._enable_edit_mode()
-                self.add_new_timer_btn.show()
             else:
                 timer._disable_edit_mode()
                 self._check_timers_for_deletion()
-                self.add_new_timer_btn.hide()
 
 
     def _check_timers_for_deletion(self):
@@ -201,9 +224,12 @@ class ClocksApp(QMainWindow):
                 self.timers.pop(i)
                 action = self.findChild(QAction, timer.name)
                 self.tray_menu.removeAction(action)
+        if not len(self.timers):
+            self.no_clocks_frame.show()
 
                 
     def createClock(self, timer_data:dict, enable_edition:bool=False, update_tray:bool=False):
+        self.no_clocks_frame.hide()
         self.timer_i += 1
         clock = Clock(
                 self.timers_layout, 

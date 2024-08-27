@@ -203,14 +203,16 @@ class MyTopNav():
             
             # edit button
             if self.show_edit:
-                self.settings_btn = QPushButton("e", self.parent)
+                self.settings_btn = QPushButton(self.parent)
+                self.settings_btn.setIcon(self.app_window.edit_icon)
                 self.settings_btn.setFixedWidth(25)
                 self.settings_btn.setFixedHeight(25)
                 self.settings_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
 
             # edit button
             if self.show_settings:
-                self.edit_btn = QPushButton("s", self.parent)
+                self.edit_btn = QPushButton(self.parent)
+                self.edit_btn.setIcon(self.app_window.settings_icon)
                 self.edit_btn.setFixedWidth(25)
                 self.edit_btn.setFixedHeight(25)
                 self.edit_btn.clicked.connect(lambda: self.app_window.show_settings())
