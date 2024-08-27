@@ -83,11 +83,11 @@ class Clock:
         self.clock_layout.addWidget(self.reset_btn)
         # append clock
         self.parent.addWidget(self.clock_frame)
-        self.delete_btn = QPushButton("X", self.clock_frame)
+        self.delete_btn = QPushButton("", self.clock_frame)
         self.delete_btn.clicked.connect(self._set_to_destroy)
         self.delete_btn.setGeometry(1,1,30,30)
         self.delete_btn.hide()
-        self.change_color_btn = QPushButton("Color", self.clock_frame)
+        self.change_color_btn = QPushButton("", self.clock_frame)
         self.change_color_btn.setGeometry(1, 35, 30,30)
         self.change_color_btn.hide()
         self.change_color_btn.clicked.connect(self._open_color_picker)

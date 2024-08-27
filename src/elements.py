@@ -203,28 +203,28 @@ class MyTopNav():
             
             # edit button
             if self.show_edit:
-                self.settings_btn = QPushButton(self.parent)
-                self.settings_btn.setIcon(self.app_window.edit_icon)
-                self.settings_btn.setFixedWidth(25)
-                self.settings_btn.setFixedHeight(25)
-                self.settings_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
+                self.edit_btn = QPushButton("", self.parent)
+                #self.edit_btn.setIcon(self.app_window.settings_icon)
+                self.edit_btn.setFixedWidth(25)
+                self.edit_btn.setFixedHeight(25)
+                self.edit_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
 
             # edit button
             if self.show_settings:
-                self.edit_btn = QPushButton(self.parent)
-                self.edit_btn.setIcon(self.app_window.settings_icon)
-                self.edit_btn.setFixedWidth(25)
-                self.edit_btn.setFixedHeight(25)
-                self.edit_btn.clicked.connect(lambda: self.app_window.show_settings())
+                self.settings_btn = QPushButton("", self.parent)
+                #self.settings_btn.setIcon(self.app_window.edit_icon)
+                self.settings_btn.setFixedWidth(25)
+                self.settings_btn.setFixedHeight(25)
+                self.settings_btn.clicked.connect(lambda: self.app_window.show_settings())
 
             # minimize button
-            self.minimize_btn = QPushButton("-", self.parent)
+            self.minimize_btn = QPushButton("󰖰", self.parent)
             self.minimize_btn.setFixedWidth(25)
             self.minimize_btn.setFixedHeight(25)
             self.minimize_btn.clicked.connect(lambda: self.app_window._minimize())
 
             # close button
-            self.close_btn = QPushButton("x", self.parent)
+            self.close_btn = QPushButton("", self.parent)
             self.close_btn.setFixedWidth(25)
             self.close_btn.setFixedHeight(25)
             self.close_btn.clicked.connect(self.app_window._close)

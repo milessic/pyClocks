@@ -28,6 +28,7 @@ import os
 from src.clocks import Clock
 from src.elements import MyTopNav, SettingsController
 from src.config import Config
+from src.random_hex_generator import generate_random_hex
 
 class ClocksApp(QMainWindow):
     dragging = False
@@ -149,15 +150,18 @@ class ClocksApp(QMainWindow):
         for timer in self.timers_data:
             self.createClock(timer)
         self.main_layout.addWidget(self.timers_frame)
-        self.add_new_timer_btn = QPushButton("+", self.main_widget)
+        self.add_new_timer_btn = QPushButton("", self.main_widget)
         self.add_new_timer_btn.hide()
-        self.add_new_timer_btn.clicked.connect(lambda: self.createClock({"Name":"","Color":"yellow", "Time":0,"Active":False}, True, True))
+        self.add_new_timer_btn.clicked.connect(lambda: self.createClock({"Name":"","Color":generate_random_hex(), "Time":0,"Active":False}, True, True))
+        #self.add_new_timer_btn.setFlat(True)
+        #self.add_new_timer_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
+        self.add_new_timer_btn.setStyleSheet("font-size: 30pt;")
 
 
     def initNoClocksUi(self):
         self.no_clocks_frame = QFrame()
         self.no_clocks_layout = QHBoxLayout(self.no_clocks_frame)
-        self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode\nand click \"+\" to create one", self.no_clocks_frame)
+        self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode \nand click   to create one", self.no_clocks_frame)
         self.no_clocks_frame.setStyleSheet("""
             .QFrame{
                 border: 3px solid #FFFFFF;
@@ -198,8 +202,8 @@ class ClocksApp(QMainWindow):
 
     def _control_edit_mode(self):
         # set + button geometry
-        appw, apph = (self.width()-40, self.height())
-        self.add_new_timer_btn.setGeometry(appw, self.topnav_height, 30,apph-30)
+        appw, apph = (self.width()-70, self.height())
+        self.add_new_timer_btn.setGeometry(appw, self.topnav_height + 10, 60,apph-45)
         # set edit mode
         if self.edit_mode:
             self.edit_mode = False
