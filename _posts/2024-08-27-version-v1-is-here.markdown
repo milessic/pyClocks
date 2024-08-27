@@ -9,8 +9,8 @@ Version v1.0 is here!
 __Release notes__
 - windows and linux builds
 - added settings
-- cretion, edition, deletion of clocks
-- app should match system appearance
+- creation, edition, deletion of clocks
+- app matches system appearance
 
 [Go to downloads][downloads]
 
