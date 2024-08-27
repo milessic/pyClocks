@@ -8,4 +8,4 @@ First version is ready and can be downloaded from source!
 
 [Go to downloads][downloads]
 
-[downloads]: /downloads
+[downloads]: /pyClocks/downloads
