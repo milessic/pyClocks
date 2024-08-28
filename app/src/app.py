@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
         QAction,
         QFrame,
         QMenu,
+        QScrollArea,
         QSystemTrayIcon,
         QMainWindow,
         QMessageBox,
@@ -134,6 +135,7 @@ class ClocksApp(QMainWindow):
         # create layout
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setContentsMargins(0,0,0,0)
+
         # create topbar
         if self.custom_top_nav:
             self.top_nav_frame = QFrame()
@@ -153,14 +155,20 @@ class ClocksApp(QMainWindow):
             self.topnav_height = self.top_nav_frame.height()
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
-        self.timers_frame = QFrame(self)
+        self.scroll_area = QScrollArea(self.main_widget)
+        self.scroll_area.setWidgetResizable(True)
+        #self.scroll_content = QWidget(self.scroll_area)
+        self.timers_frame = QFrame(self.scroll_area)
+        #self.timers_frame = QWidget(self.scroll_area)
         self.timers_layout = QHBoxLayout(self.timers_frame)
+        self.scroll_area.setLayout(self.timers_layout)
         self.initNoClocksUi()
         if not len(self.timers_data):
             self.no_clocks_frame.show()
         for timer in self.timers_data:
             self.createClock(timer)
-        self.main_layout.addWidget(self.timers_frame)
+        #self.main_layout.addWidget(self.timers_frame)
+        self.main_layout.addWidget(self.scroll_area)
         self.add_new_timer_btn = QPushButton("", self.main_widget)
         if self.nerd_font is not None:
             self.add_new_timer_btn.setFont(QtGui.QFont(self.nerd_font))
@@ -169,7 +177,8 @@ class ClocksApp(QMainWindow):
         #self.add_new_timer_btn.setFlat(True)
         #self.add_new_timer_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
         self.add_new_timer_btn.setStyleSheet("font-size: 30pt;")
-        self.setMaximumWidth(800)
+        self.setMaximumWidth(500)
+        self.scroll_area.setWidget(self.timers_frame)
 
 
     def initNoClocksUi(self):

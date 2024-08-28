@@ -52,6 +52,7 @@ class Clock:
 
     def initUi(self):
         self.clock_frame = QFrame()
+        self.clock_frame.setMinimumWidth(200)
         self._update_frame_stylesheet()
         self.clock_layout = QVBoxLayout(self.clock_frame)
         # setup label
