@@ -4,6 +4,7 @@ title: Release Notes
 permalink: /progress/
 ---
 # v.1.1
+- [ ] - add version to the application
 - [ ] - add language change
 - [ ] - make app more responsive
     - [ ] - make app border rounded
