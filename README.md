@@ -1,7 +1,7 @@
-# Track your activities with PyClockss
-PyClockss is a simple, lightweight PyQt5 application to track your activities.
+# Track your activities with PyClocks
+PyClocks is a simple, lightweight PyQt5 application to track your activities.
 
-Please go to [PyClocks web page](https://milessic.github.io/pyClockss/downloads/)
+Please go to [PyClocks web page](https://milessic.github.io/pyClocks/)
 
 # Environment setup
  - Instal python3.12
@@ -9,8 +9,8 @@ Please go to [PyClocks web page](https://milessic.github.io/pyClockss/downloads/
  That's all!
 
 # Contributing
-If you want to contribute, please write to pyclocks@gmail.com.
+If you want to contribute, please write to [pyclocks@gmail.com.](mailto:pyclocks@gmail.com?title=Contributing Question)
 
 # Downloads
-Please see [PyClockss downloads page](https://milessic.github.io/pyClocks/downloads/)
+Please see [PyClocks downloads page](https://milessic.github.io/pyClocks/downloads/)
 
