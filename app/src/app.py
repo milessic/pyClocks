@@ -30,11 +30,14 @@ from src.elements import MyTopNav, SettingsController
 from src.config import Config
 from src.random_hex_generator import generate_random_hex
 
+VERSION = "v1.1"
 class ClocksApp(QMainWindow):
     dragging = False
     timers_data = []
     timers = []
     app_name = "PyClocks"
+    version = VERSION
+    short_description = app_name + " " + version + " - " + "milessic, 2024"
     default_config = {
             "always-on-top": True
             }
@@ -85,9 +88,15 @@ class ClocksApp(QMainWindow):
         #if self.config.get("always-on-top"):
         #    self.setWindwowFlags(Qt.WindowStaysOnTopHint | Qt.Window)
         if self.custom_top_nav:
-            self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
+            if self.config.runastool:
+                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
+            else:
+                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
         else:
-            self.setWindowFlags(Qt.Tool)
+            if self.config.runastool:
+                self.setWindowFlags( Qt.Window | Qt.Tool)
+            else:
+                self.setWindowFlags( Qt.Window )
         self.setMinimumSize(130,231)
         if self.config.openwindowonstart:
             self.show()

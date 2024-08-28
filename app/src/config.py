@@ -11,6 +11,7 @@ class Config:
 applanguage = en
 noidea = confusediam
 usesystemtopbar = 0
+runastool = 1
 
 [DISPLAY]
 openwindowonstart = 1
@@ -91,6 +92,17 @@ clockdisplaymode = digital
     @clockdisplaymode.setter
     def clockdisplaymode(self, value):
         self.c.set("DISPLAY", "clockdisplaymode", value)
+
+    @property
+    def runastool(self):
+        return bool(int(self.c.get("GENERAL", "runastool")))
+
+    @runastool.setter
+    def runastool(self, value):
+        v = "0"
+        if value:
+            v = "1"
+        self.c.set("GENERAL", "runastool", v)
 
 
 

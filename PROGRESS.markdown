@@ -5,7 +5,7 @@ permalink: /progress/
 ---
 # v.1.1
 - [ ] - make KDE Plasma appearance as default
-- [ ] - add version to the application
+- [x] - add version to the application
 - [ ] - add language change
 - [ ] - make app more responsive
     - [ ] - make app border rounded
@@ -14,6 +14,7 @@ permalink: /progress/
     - [ ] - add app resize when using custom topnav
 - [ ] - don't save progress while edit mode is enabled
 - [ ] - force save on app close
+- [x] - add option to not run app as Tool
 
 # v.1
 - [x] - Add clock adding / editing / removing from app level
