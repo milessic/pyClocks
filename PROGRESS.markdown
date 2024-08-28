@@ -4,6 +4,7 @@ title: Release Notes
 permalink: /progress/
 ---
 # v.1.1
+- [ ] - make KDE Plasma appearance as default
 - [ ] - add version to the application
 - [ ] - add language change
 - [ ] - make app more responsive
@@ -11,6 +12,8 @@ permalink: /progress/
     - [ ] - make fixed width of timer
     - [ ] - make main area scrollable
     - [ ] - add app resize when using custom topnav
+- [ ] - don't save progress while edit mode is enabled
+- [ ] - force save on app close
 
 # v.1
 - [x] - Add clock adding / editing / removing from app level
