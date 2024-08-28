@@ -3,7 +3,6 @@ layout: default
 title: License
 permalink: /license/
 ---
-# License
 ## MIT Litense
 #### Copyright (c) 2024 Miłosz
 
