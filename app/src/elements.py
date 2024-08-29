@@ -39,18 +39,18 @@ class SettingsController(QWidget):
                 "openwindowonstart",
                 ["Yes", "No"]
             ],
-            [
-                "App language",
-                "combobox",
-                "applanguage",
-                ["en", "pl"],
-            ],
-            [
-                "Clock Display Mode",
-                "combobox",
-                "clockdisplaymode",
-                ["digital", "analog"],
-            ],
+#            [
+#                "App language",
+#                "combobox",
+#                "applanguage",
+#                ["en", "pl"],
+#            ],
+#            [
+#                "Clock Display Mode",
+#                "combobox",
+#                "clockdisplaymode",
+#                ["digital", "analog"],
+#            ],
         ]
     dragging = False
     def __init__(self, app, custom_top_nav:bool=True):
