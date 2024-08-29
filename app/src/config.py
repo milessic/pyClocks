@@ -9,8 +9,9 @@ from pathlib import Path
 class Config:
     default_config = """[GENERAL]
 applanguage = en
-noidea = confusediam
 usesystemtopbar = 0
+runastool = 1
+saveinterval = 5
 
 [DISPLAY]
 openwindowonstart = 1
@@ -27,21 +28,29 @@ clockdisplaymode = digital
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
         if len(self.c) < 2:
-            del self.c
-            print("Didn't detect valid config file, creating default one")
-            with open(self.config_path, "w") as f:
-                f.write(self.default_config)
-            self.c = configparser.ConfigParser()
-            self.c.read(self.config_path)
+            self._create_new_config()
 
-        # GENERAL
-        self.applanguage = self.c["GENERAL"]["applanguage"]
-        self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
+        try:
+            # GENERAL
+            self.applanguage = self.c["GENERAL"]["applanguage"]
+            self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
+            self.runastool = bool(int(self.c["GENERAL"]["runastool"]))
+            self.saveinterval= self.c["GENERAL"]["saveinterval"]
 
-        # DISPLAY
-        self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
-        self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
+            # DISPLAY
+            self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
+            self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
+        except:
+            self._create_new_config()
+            
 
+    def _create_new_config(self):
+        del self.c
+        print("Didn't detect valid config file, creating default one")
+        with open(self.config_path, "w") as f:
+            f.write(self.default_config)
+        self.c = configparser.ConfigParser()
+        self.c.read(self.config_path)
 
     def _save_config(self):
         with open(self.config_path, "w") as f:
@@ -64,6 +73,7 @@ clockdisplaymode = digital
     def usesystemtopbar(self):
         return bool(int(self.c["GENERAL"]["usesystemtopbar"]))
 
+
     @usesystemtopbar.setter
     def usesystemtopbar(self, value:bool):
         if value:
@@ -71,6 +81,14 @@ clockdisplaymode = digital
         else:
             self._usesystemtopbar = "0"
         self.c.set("GENERAL", "usesystemtopbar", self._usesystemtopbar)
+
+    @property
+    def saveinterval(self):
+        return int(float(self.c.get("GENERAL", "saveinterval")))
+
+    @saveinterval.setter
+    def saveinterval(self, value:str):
+        self.c.set("GENERAL", "saveinterval", value)
 
     @property
     def openwindowonstart(self):
@@ -91,6 +109,17 @@ clockdisplaymode = digital
     @clockdisplaymode.setter
     def clockdisplaymode(self, value):
         self.c.set("DISPLAY", "clockdisplaymode", value)
+
+    @property
+    def runastool(self):
+        return bool(int(self.c.get("GENERAL", "runastool")))
+
+    @runastool.setter
+    def runastool(self, value):
+        v = "0"
+        if value:
+            v = "1"
+        self.c.set("GENERAL", "runastool", v)
 
 
 

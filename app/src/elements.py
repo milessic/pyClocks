@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 
-class SettingsController(QMainWindow):
+class SettingsController(QWidget):
     fields = [
             [
                 "Use System Topbar (not recommended)",
@@ -23,28 +23,40 @@ class SettingsController(QMainWindow):
                 ["Yes", "No"]
                 ],
             [
+                "Run As Tool (visible only from Tray)",
+                "combobox",
+                "runastool",
+                ["Yes", "No"]
+            ],
+            [
+                "Saving interval (in seconds)",
+                "input",
+                "saveinterval",
+            ],
+            [
                 "Open Window When Starting",
                 "combobox",
                 "openwindowonstart",
                 ["Yes", "No"]
             ],
-            [
-                "App language",
-                "combobox",
-                "applanguage",
-                ["en", "pl"],
-            ],
-            [
-                "Clock Display Mode",
-                "combobox",
-                "clockdisplaymode",
-                ["digital", "analog"],
-            ],
+#            [
+#                "App language",
+#                "combobox",
+#                "applanguage",
+#                ["en", "pl"],
+#            ],
+#            [
+#                "Clock Display Mode",
+#                "combobox",
+#                "clockdisplaymode",
+#                ["digital", "analog"],
+#            ],
         ]
     dragging = False
     def __init__(self, app, custom_top_nav:bool=True):
         super().__init__()
         self.app = app
+        self.nerd_font = self.app.nerd_font
         self.icon_topnav_path = self.app.icon_topnav_path
         self.setWindowIcon(self.app.icon)
         self.custom_top_nav = self.app.custom_top_nav
@@ -52,6 +64,9 @@ class SettingsController(QMainWindow):
         self.initUi()
         if self.custom_top_nav:
             self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
+        else:
+            pass
+            #self.setWindowFlags(Qt.Window )
 
     # def __del__(self):
         # TODO make additional app that will run and show QMessageBox in this case
@@ -59,10 +74,10 @@ class SettingsController(QMainWindow):
         #    QMessageBox.critical(self, "PyClocks Info", "Closing settings closes also app if system topbar is used!")
 
     def initUi(self):
-        self.setWindowTitle(self.app_name)
-        self.main_widget = QWidget(self)
-        self.setCentralWidget(self.main_widget)
-        self.main_layout = QVBoxLayout(self.main_widget)
+        #self.setWindowTitle(self.app_name)
+        #self.main_widget = QWidget(self)
+        #self.setCentralWidget(self.main_widget)
+        self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0,0,0,0)
         if self.custom_top_nav:
             self.top_nav_frame = QFrame()
@@ -88,6 +103,8 @@ class SettingsController(QMainWindow):
 
     def setup_form(self):
         self.form_layout = QVBoxLayout(self.settings_frame)
+        self.app_description = QLabel(self.app.short_description, self)
+        self.form_layout.addWidget(self.app_description)
         for field in self.fields:
             field_layout = QHBoxLayout()
             field_label = QLabel(field[0], self)
@@ -154,6 +171,7 @@ class SettingsController(QMainWindow):
         self.app.config.update_config_file()
         # show user that it happened
         self.settings_saved.show()
+        self.app._reload_settings()
 
     def _close(self):
         self.settings_saved.hide()
@@ -222,6 +240,8 @@ class MyTopNav():
                 self.edit_btn.setFixedHeight(25)
                 self.edit_btn.clicked.connect(lambda: self.app_window._control_edit_mode())
                 self.edit_btn.setStyleSheet("color: #dfdfdf")
+                if self.app_window.nerd_font is not None:
+                    self.edit_btn.setFont(QtGui.QFont(self.app_window.nerd_font))
 
             # edit button
             if self.show_settings:
@@ -231,6 +251,8 @@ class MyTopNav():
                 self.settings_btn.setFixedHeight(25)
                 self.settings_btn.clicked.connect(lambda: self.app_window.show_settings())
                 self.settings_btn.setStyleSheet("color: #dfdfdf")
+                if self.app_window.nerd_font is not None:
+                    self.settings_btn.setFont(QtGui.QFont(self.app_window.nerd_font))
 
             # minimize button
             self.minimize_btn = QPushButton("󰖰", self.parent)
@@ -238,6 +260,8 @@ class MyTopNav():
             self.minimize_btn.setFixedHeight(25)
             self.minimize_btn.clicked.connect(lambda: self.app_window._minimize())
             self.minimize_btn.setStyleSheet("color: #dfdfdf")
+            if self.app_window.nerd_font is not None:
+                self.minimize_btn.setFont(QtGui.QFont(self.app_window.nerd_font))
 
             # close button
             self.close_btn = QPushButton("", self.parent)
@@ -245,6 +269,8 @@ class MyTopNav():
             self.close_btn.setFixedHeight(25)
             self.close_btn.clicked.connect(self.app_window._close)
             self.close_btn.setStyleSheet("color: #dfdfdf")
+            if self.app_window.nerd_font is not None:
+                self.close_btn.setFont(QtGui.QFont(self.app_window.nerd_font))
 
             # place widgets
             if self.show_settings:

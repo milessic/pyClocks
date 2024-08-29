@@ -4,16 +4,22 @@ title: Release Notes
 permalink: /progress/
 ---
 # v.1.1
-- [ ] - make KDE Plasma appearance as default
-- [ ] - add version to the application
-- [ ] - add language change
-- [ ] - make app more responsive
-    - [ ] - make app border rounded
-    - [ ] - make fixed width of timer
-    - [ ] - make main area scrollable
-    - [ ] - add app resize when using custom topnav
-- [ ] - don't save progress while edit mode is enabled
-- [ ] - force save on app close
+- [x] - general features
+    - [x] - add option to not run app as Tool
+    - [x] - add version to the application
+- [x] - make app more responsive
+    - [x] - add minimum widht for each timer
+    - [x] - make main area scrollable
+    - [x] - add app resize when using custom topnav
+- [x] - Appearance
+    - [x] - redesign edit screen
+    - [x] - add + button to no-timers-panel
+- [x] - Save improvements
+    - [x] - don't save progress while edit mode is enabled
+    - [x] - force save on app close
+    - [x] - add saving interval
+- [x] - Fixes
+    - [x] - nerdfonts may not be displayed correctly #4
 
 # v.1
 - [x] - Add clock adding / editing / removing from app level
@@ -22,7 +28,14 @@ permalink: /progress/
 - [x] - add custom icons for topnav
 
 # Some future
+## General
 - [ ] - Add dropdown to open recent clock-sets
 - [ ] - Add warning time
-- [ ] - Add saving interval settings
+
+## Appearance
 - [ ] - add analog clock
+- [ ] - make KDE Plasma appearance as default
+- [ ] - make app border rounded
+- [ ] - add language change
+- [ ] - save isActive
+- [ ] - add autoupdate

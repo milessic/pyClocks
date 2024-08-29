@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from configparser import ConfigParser
+from copy import deepcopy
 import json
 import sys
 from datetime import (
@@ -7,10 +8,13 @@ from datetime import (
         )
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import (
+        QSizeGrip,
         QLabel,
         QAction,
+        QSizePolicy,
         QFrame,
         QMenu,
+        QScrollArea,
         QSystemTrayIcon,
         QMainWindow,
         QMessageBox,
@@ -30,11 +34,14 @@ from src.elements import MyTopNav, SettingsController
 from src.config import Config
 from src.random_hex_generator import generate_random_hex
 
+VERSION = "v1.1"
 class ClocksApp(QMainWindow):
     dragging = False
     timers_data = []
     timers = []
     app_name = "PyClocks"
+    version = VERSION
+    short_description = app_name + " " + version + " - " + "milessic, 2024"
     default_config = {
             "always-on-top": True
             }
@@ -42,6 +49,7 @@ class ClocksApp(QMainWindow):
     start_date = datetime.now().strftime("%y-%m-%d")
     edit_mode = False
     top_nav_height = 0
+    its_time_to_save = True
 
     def __init__(
             self,
@@ -85,9 +93,22 @@ class ClocksApp(QMainWindow):
         #if self.config.get("always-on-top"):
         #    self.setWindwowFlags(Qt.WindowStaysOnTopHint | Qt.Window)
         if self.custom_top_nav:
-            self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
+            self.gripSize = 16
+            self.grips = []
+            for i in range(4):
+                grip = QSizeGrip(self)
+                grip.setStyleSheet("background: transparent")
+                grip.resize(self.gripSize, self.gripSize)
+                self.grips.append(grip)
+            if self.config.runastool:
+                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
+            else:
+                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
         else:
-            self.setWindowFlags(Qt.Tool)
+            if self.config.runastool:
+                self.setWindowFlags( Qt.Window | Qt.Tool)
+            else:
+                self.setWindowFlags( Qt.Window )
         self.setMinimumSize(130,231)
         if self.config.openwindowonstart:
             self.show()
@@ -103,19 +124,20 @@ class ClocksApp(QMainWindow):
             self.timers_data = []
         # setup timer to save data
         self.app_timer = QTimer()
-        self.app_timer.timeout.connect(lambda: self._run_timer())
-        self.app_timer.start(100)
+        self.app_timer.timeout.connect(lambda: self._save_state())
+        self.app_timer.start(int(int(self.config.saveinterval)*1000))
 
-    def _run_timer(self):
+    def _save_state(self):
         data_for_save = self._get_data_for_save()
-        try:
-            json.dump(data_for_save,open(self.timers_data_path,"w"), indent=4)
-        except Exception as e:
-            pass
-        try:
-            json.dump(data_for_save, open(self.history_file,"w"))
-        except Exception as e:
-            print(f"Cannot save history due to {e}")
+        if self.its_time_to_save:
+            try:
+                json.dump(data_for_save,open(self.timers_data_path,"w"), indent=4)
+            except Exception as e:
+                print(f"Cannot save data due to {e}")
+            try:
+                json.dump(data_for_save, open(self.history_file,"w"))
+            except Exception as e:
+                print(f"Cannot save history due to {e}")
 
     def initUi(self):
         # set app name and main widget
@@ -125,6 +147,7 @@ class ClocksApp(QMainWindow):
         # create layout
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setContentsMargins(0,0,0,0)
+
         # create topbar
         if self.custom_top_nav:
             self.top_nav_frame = QFrame()
@@ -144,14 +167,41 @@ class ClocksApp(QMainWindow):
             self.topnav_height = self.top_nav_frame.height()
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
-        self.timers_frame = QFrame(self)
-        self.timers_layout = QHBoxLayout(self.timers_frame)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.container_widget = QWidget()
+        self.container_layout = QVBoxLayout()
+        self.container_widget.setLayout(self.container_layout)
+
+        #self.scroll_content = QWidget(self.scroll_area)
+        self.timers_frame = QFrame()
+        self.timers_frame.setStyleSheet("margin: 10px;")
+        #self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.scroll_area.setWidget(self.container_widget)
+
+        #self.timers_frame = QWidget(self.scroll_area)
+        self.timers_layout = QHBoxLayout()
+        self.container_layout.addLayout(self.timers_layout)
+        #self.timers_layout.setContentsMargins(10, 10, 10, 10)  # Adjust as needed
+        #self.timers_layout.setSpacing(10)  # Adjust the spacing between widgets
+
+        #self.scroll_area.setLayout(self.timers_layout)
         self.initNoClocksUi()
         if not len(self.timers_data):
             self.no_clocks_frame.show()
         for timer in self.timers_data:
             self.createClock(timer)
-        self.main_layout.addWidget(self.timers_frame)
+        #self.main_layout.addWidget(self.timers_frame)
+        self.main_layout.addWidget(self.scroll_area)
+        self.save_edit_btn = QPushButton("Save", self.main_widget)
+        if self.nerd_font is not None:
+            self.save_edit_btn.setFont(QtGui.QFont(self.nerd_font))
+        self.save_edit_btn.hide()
+        self.save_edit_btn.clicked.connect(self._save_edit)
+        self.save_edit_btn.setStyleSheet("font-size: 20pt;")
         self.add_new_timer_btn = QPushButton("", self.main_widget)
         if self.nerd_font is not None:
             self.add_new_timer_btn.setFont(QtGui.QFont(self.nerd_font))
@@ -160,13 +210,21 @@ class ClocksApp(QMainWindow):
         #self.add_new_timer_btn.setFlat(True)
         #self.add_new_timer_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
         self.add_new_timer_btn.setStyleSheet("font-size: 30pt;")
-        self.setMaximumWidth(800)
 
 
     def initNoClocksUi(self):
         self.no_clocks_frame = QFrame()
-        self.no_clocks_layout = QHBoxLayout(self.no_clocks_frame)
+        self.no_clocks_layout = QVBoxLayout(self.no_clocks_frame)
         self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode \nand click   to create one", self.no_clocks_frame)
+        self.no_clocks_add_new_btn = QPushButton("", self.no_clocks_frame)
+        if self.nerd_font is not None:
+            self.no_clocks_add_new_btn.setFont(QtGui.QFont(self.nerd_font))
+            self.no_clocks_label.setFont(QtGui.QFont(self.nerd_font))
+        self.no_clocks_add_new_btn.clicked.connect(lambda: [self._control_edit_mode(), self.createClock({"Name":"","Color":generate_random_hex(), "Time":0,"Active":False}, True, True)])
+        self.no_clocks_add_new_btn.setStyleSheet("font-size: 30pt;")
+        sp_retain = self.no_clocks_add_new_btn.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.no_clocks_add_new_btn.setSizePolicy(sp_retain)
         self.no_clocks_frame.setStyleSheet("""
             .QFrame{
                 border: 3px solid #FFFFFF;
@@ -176,6 +234,8 @@ class ClocksApp(QMainWindow):
             }
         """)
         self.no_clocks_layout.addWidget(self.no_clocks_label)
+        self.no_clocks_layout.addWidget(self.no_clocks_add_new_btn)
+
         self.timers_layout.addWidget(self.no_clocks_frame)
         self.no_clocks_frame.hide()
 
@@ -206,19 +266,22 @@ class ClocksApp(QMainWindow):
         t.tray_object = self.tray_menu 
         t.tray_action = clock_action
 
+    def _save_edit(self):
+        self._control_edit_mode()
+
     def _control_edit_mode(self):
-        # set + button geometry
-        appw, apph = (self.width()-70, self.height())
-        try:
-            self.add_new_timer_btn.setGeometry(appw, self.topnav_height + 10, 60,apph-45)
-        except AttributeError:
-            self.add_new_timer_btn.setGeometry(appw, 10, 60,apph-20)
         # set edit mode
         if self.edit_mode:
+            self.no_clocks_add_new_btn.show()
             self.edit_mode = False
+            self.its_time_to_save = True
+            self.save_edit_btn.hide()
             self.add_new_timer_btn.hide()
         else:
+            self.no_clocks_add_new_btn.hide()
             self.edit_mode = True
+            self.its_time_to_save = False
+            self.save_edit_btn.show()
             self.add_new_timer_btn.show()
         # update timers
         for timer in self.timers:
@@ -250,7 +313,8 @@ class ClocksApp(QMainWindow):
                 timer_data["Name"],
                 timer_data["Time"],
                 isActive=False,
-                color=timer_data["Color"]
+                color=timer_data["Color"],
+                app=self
                 )
         # setup frame and layout
         self.timers.append(clock)
@@ -295,6 +359,9 @@ class ClocksApp(QMainWindow):
         #self.hide()
 
     def _close(self):
+        self.its_time_to_save = True
+        self._check_timers_for_deletion()
+        self._save_state()
         sys.exit()
 
     def _get_data_for_save(self):
@@ -304,8 +371,34 @@ class ClocksApp(QMainWindow):
             data.append(timer)
         return data
 
+    def _set_timer_interval(self):
+        self.app_timer.setInterval(self.config.saveinterval*1000)
+
+    def _reload_settings(self):
+        self._set_timer_interval()
+
+
+    def _update_edit_buttons_geometry(self):
+        # set + button geometry
+        appw, apph = (self.width(), self.height())
+        self.save_edit_btn.setGeometry(22 , apph - 80, int(appw/2) - 30,58)
+        self.add_new_timer_btn.setGeometry( int(appw/2), apph - 80, int(appw/2) - 22,58)
     # timer methods
     # Events
+    def resizeEvent(self, event):
+        QMainWindow.resizeEvent(self, event)
+        if not self.custom_top_nav:
+            return
+        self._update_edit_buttons_geometry()
+        rect = self.rect()
+        # top right
+        self.grips[1].move(rect.right() - self.gripSize, 0)
+        # bottom right
+        self.grips[2].move(
+            rect.right() - self.gripSize, rect.bottom() - self.gripSize)
+        # bottom left
+        self.grips[3].move(0, rect.bottom() - self.gripSize)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragging = True
