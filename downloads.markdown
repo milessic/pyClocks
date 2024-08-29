@@ -15,7 +15,7 @@ permalink: /downloads/
 
 
 [src]: https://github.com/milessic/pyClocks
-[x86_64]: https://drive.google.com/file/d/1gZWseMwbOZWkuPYV9BpBEYJzLMckeEbm/view?usp=sharing
+[x86_64]: https://drive.google.com/file/d/1XVwmpzuulzSHKcxmYFs2-2mcMEKZtLFx/view?usp=sharing
 [exe]: https://drive.google.com/file/d/183dS5lLXdnCqXU_PoAEgesKqkHiYTmCX/view?usp=sharing
 [dmg]: about:blank
 
