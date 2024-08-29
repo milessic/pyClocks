@@ -12,11 +12,11 @@ App writes much less data into disk right now. Version ``v1.0`` was writing ``ar
 
 ### Release notes
 #### General features
-- added option to not run app as Tool
+- added option to not run app as Tool `when run as Tool, it is present only in system tray`
 - added version information to the application
 
 #### App is more responsive
-- added minimum widht for each timer
+- added minimum width for each timer
 - made main area scrollable
 - add app resize when using custom topnav
 
@@ -30,8 +30,10 @@ App writes much less data into disk right now. Version ``v1.0`` was writing ``ar
 - saving interval is cusomizable
 
 #### Fixes
-- nerdfonts may not be displayed correctly #4
+- [nerdfonts may not be displayed correctly #4][issue4]
 
 [Go to downloads][downloads]
 
 [downloads]: /pyClocks/downloads
+[issue4]: https://github.com/milessic/pyClocks/issues/4
+
