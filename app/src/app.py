@@ -129,7 +129,6 @@ class ClocksApp(QMainWindow):
 
     def _save_state(self):
         data_for_save = self._get_data_for_save()
-        print(1)
         if self.its_time_to_save:
             try:
                 json.dump(data_for_save,open(self.timers_data_path,"w"), indent=4)
@@ -221,9 +220,10 @@ class ClocksApp(QMainWindow):
         if self.nerd_font is not None:
             self.no_clocks_add_new_btn.setFont(QtGui.QFont(self.nerd_font))
         self.no_clocks_add_new_btn.clicked.connect(lambda: [self._control_edit_mode(), self.createClock({"Name":"","Color":generate_random_hex(), "Time":0,"Active":False}, True, True)])
-        #self.no_clocks_add_new_btn.setFlat(True)
-        #self.no_clocks_add_new_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
         self.no_clocks_add_new_btn.setStyleSheet("font-size: 30pt;")
+        sp_retain = self.no_clocks_add_new_btn.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.no_clocks_add_new_btn.setSizePolicy(sp_retain)
         self.no_clocks_frame.setStyleSheet("""
             .QFrame{
                 border: 3px solid #FFFFFF;
@@ -269,20 +269,15 @@ class ClocksApp(QMainWindow):
         self._control_edit_mode()
 
     def _control_edit_mode(self):
-        # set + button geometry
-        appw, apph = (self.width(), self.height())
-        try:
-            self.save_edit_btn.setGeometry(15 , apph - 60, int(appw/2) - 20,45)
-            self.add_new_timer_btn.setGeometry( int(appw/2), apph - 60, int(appw/2) - 20,45)
-        except AttributeError:
-            self.add_new_timer_btn.setGeometry(appw, 10, 60,apph-20)
         # set edit mode
         if self.edit_mode:
+            self.no_clocks_add_new_btn.show()
             self.edit_mode = False
             self.its_time_to_save = True
             self.save_edit_btn.hide()
             self.add_new_timer_btn.hide()
         else:
+            self.no_clocks_add_new_btn.hide()
             self.edit_mode = True
             self.its_time_to_save = False
             self.save_edit_btn.show()
@@ -317,7 +312,8 @@ class ClocksApp(QMainWindow):
                 timer_data["Name"],
                 timer_data["Time"],
                 isActive=False,
-                color=timer_data["Color"]
+                color=timer_data["Color"],
+                app=self
                 )
         # setup frame and layout
         self.timers.append(clock)
@@ -364,7 +360,6 @@ class ClocksApp(QMainWindow):
     def _close(self):
         self.its_time_to_save = True
         self._check_timers_for_deletion()
-        print("exit")
         self._save_state()
         sys.exit()
 
@@ -382,12 +377,18 @@ class ClocksApp(QMainWindow):
         self._set_timer_interval()
 
 
+    def _update_edit_buttons_geometry(self):
+        # set + button geometry
+        appw, apph = (self.width(), self.height())
+        self.save_edit_btn.setGeometry(22 , apph - 80, int(appw/2) - 30,58)
+        self.add_new_timer_btn.setGeometry( int(appw/2), apph - 80, int(appw/2) - 22,58)
     # timer methods
     # Events
     def resizeEvent(self, event):
+        QMainWindow.resizeEvent(self, event)
         if not self.custom_top_nav:
             return
-        QMainWindow.resizeEvent(self, event)
+        self._update_edit_buttons_geometry()
         rect = self.rect()
         # top right
         self.grips[1].move(rect.right() - self.gripSize, 0)

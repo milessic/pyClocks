@@ -35,3 +35,4 @@ permalink: /progress/
 - [ ] - make KDE Plasma appearance as default
 - [ ] - make app border rounded
 - [ ] - add language change
+- [ ] - save isActive

@@ -37,8 +37,9 @@ class Clock:
                               "border-radius: 5px;"
 
     )
-    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_action=None, tray_object=None):
+    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_action=None, tray_object=None, app=None):
         self.parent = parent
+        self.app = app
         self.timer_id = timer_id
         self.name = name
         self.count = count
@@ -158,6 +159,8 @@ class Clock:
         self.to_be_destroyed = True
         self.tray_object.removeAction(self.tray_action)
         self.clock_frame.hide()
+        if self.app is not None:
+            self.app._check_timers_for_deletion()
         #timer.clock_frame.destroy()
     
     def _open_color_picker(self):
