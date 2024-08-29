@@ -84,14 +84,20 @@ class Clock:
         # setup buttons
         self.control_time_btn = QPushButton("Start", self.clock_frame)
         self.control_time_btn.clicked.connect(lambda: self._control_time())
+        self.control_time_mockup_label = QLabel(self.clock_frame)
+        self.control_time_mockup_label.hide()
         #self.stop_btn = QPushButton("Stop", self.clock_frame)
         #self.stop_btn.clicked.connect(lambda: self._stop_time())
         self.reset_btn = QPushButton("Reset", self.clock_frame)
         self.reset_btn.clicked.connect(lambda: self._reset_time())
+        self.reset_mockup_label = QLabel(self.clock_frame)
+        self.reset_mockup_label.hide()
         # pack buttson
         self.clock_layout.addWidget(self.control_time_btn)
+        self.clock_layout.addWidget(self.control_time_mockup_label)
         #self.clock_layout.addWidget(self.stop_btn)
         self.clock_layout.addWidget(self.reset_btn)
+        self.clock_layout.addWidget(self.reset_mockup_label)
         # append clock
         self.parent.addWidget(self.clock_frame)
         self.delete_btn = QPushButton("", self.clock_frame)
@@ -117,6 +123,10 @@ class Clock:
         return datetime.fromtimestamp(time_as_int, timezone.utc).strftime("%H:%M:%S")
 
     def _disable_edit_mode(self):
+        self.control_time_btn.show()
+        self.reset_btn.show()
+        self.control_time_mockup_label.hide()
+        self.reset_mockup_label.hide()
         self.timer_display.setEnabled(False)
         self.clock_name.setEnabled(False)
         self.delete_btn.hide()
@@ -125,6 +135,10 @@ class Clock:
         self._update_timer_stylesheet()
 
     def _enable_edit_mode(self):
+        self.control_time_btn.hide()
+        self.reset_btn.hide()
+        #self.control_time_mockup_label.show()
+        self.reset_mockup_label.show()
         self.timer_display.setEnabled(True)
         self.clock_name.setEnabled(True)
         self.delete_btn.show()

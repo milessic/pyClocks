@@ -29,6 +29,11 @@ class SettingsController(QWidget):
                 ["Yes", "No"]
             ],
             [
+                "Saving interval (in seconds)",
+                "input",
+                "saveinterval",
+            ],
+            [
                 "Open Window When Starting",
                 "combobox",
                 "openwindowonstart",
@@ -165,6 +170,7 @@ class SettingsController(QWidget):
         self.app.config.update_config_file()
         # show user that it happened
         self.settings_saved.show()
+        self.app._reload_settings()
 
     def _close(self):
         self.settings_saved.hide()
