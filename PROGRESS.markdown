@@ -36,3 +36,4 @@ permalink: /progress/
 - [ ] - make app border rounded
 - [ ] - add language change
 - [ ] - save isActive
+- [ ] - add autoupdate
