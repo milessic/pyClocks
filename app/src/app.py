@@ -219,6 +219,7 @@ class ClocksApp(QMainWindow):
         self.no_clocks_add_new_btn = QPushButton("", self.no_clocks_frame)
         if self.nerd_font is not None:
             self.no_clocks_add_new_btn.setFont(QtGui.QFont(self.nerd_font))
+            self.no_clocks_label.setFont(QtGui.QFont(self.nerd_font))
         self.no_clocks_add_new_btn.clicked.connect(lambda: [self._control_edit_mode(), self.createClock({"Name":"","Color":generate_random_hex(), "Time":0,"Active":False}, True, True)])
         self.no_clocks_add_new_btn.setStyleSheet("font-size: 30pt;")
         sp_retain = self.no_clocks_add_new_btn.sizePolicy()

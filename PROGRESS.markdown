@@ -18,6 +18,8 @@ permalink: /progress/
     - [x] - don't save progress while edit mode is enabled
     - [x] - force save on app close
     - [x] - add saving interval
+- [x] - Fixes
+    - [x] - nerdfonts may not be displayed correctly #4
 
 # v.1
 - [x] - Add clock adding / editing / removing from app level
