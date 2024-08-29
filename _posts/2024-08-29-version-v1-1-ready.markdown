@@ -14,17 +14,21 @@ App writes much less data into disk right now. Version ``v1.0`` was writing ``ar
 #### General features
 - added option to not run app as Tool
 - added version information to the application
+
 #### App is more responsive
 - added minimum widht for each timer
 - made main area scrollable
 - add app resize when using custom topnav
+
 #### Appearance
 - redesigned edit screen
 - add + button to no-timers-panel
+
 #### Save improvements
 - app doesn't save while edit mode is enabled
 - app force saves on close
 - saving interval is cusomizable
+
 #### Fixes
 - nerdfonts may not be displayed correctly #4
 
