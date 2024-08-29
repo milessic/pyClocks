@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
         QPushButton,
         QVBoxLayout,
         QLabel,
+        QSizePolicy,
         QVBoxLayout,
         QColorDialog,
         )
@@ -52,12 +53,17 @@ class Clock:
 
     def initUi(self):
         self.clock_frame = QFrame()
-        self.clock_frame.setMinimumWidth(200)
+        self.clock_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+        self.clock_frame.setMinimumWidth(150)
         self._update_frame_stylesheet()
         self.clock_layout = QVBoxLayout(self.clock_frame)
         # setup label
         self.clock_name = QLineEdit(self.name, self.clock_frame)
+        #self.clock_name.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.clock_name.setAlignment(Qt.AlignCenter)
+        self.clock_name.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
         self.clock_name.textChanged.connect(self._update_clock_name)
         # pack label
         self.clock_layout.addWidget(self.clock_name, alignment=Qt.AlignCenter)

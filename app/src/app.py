@@ -7,8 +7,10 @@ from datetime import (
         )
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import (
+        QSizeGrip,
         QLabel,
         QAction,
+        QSizePolicy,
         QFrame,
         QMenu,
         QScrollArea,
@@ -86,6 +88,13 @@ class ClocksApp(QMainWindow):
             self.setupConfigs(config_data)
         # setup app and UI
         self.initUi()
+        self.gripSize = 16
+        self.grips = []
+        for i in range(4):
+            grip = QSizeGrip(self)
+            grip.setStyleSheet("background: transparent")
+            grip.resize(self.gripSize, self.gripSize)
+            self.grips.append(grip)
         #if self.config.get("always-on-top"):
         #    self.setWindwowFlags(Qt.WindowStaysOnTopHint | Qt.Window)
         if self.custom_top_nav:
@@ -155,13 +164,28 @@ class ClocksApp(QMainWindow):
             self.topnav_height = self.top_nav_frame.height()
             self.main_layout.addWidget(self.top_nav_frame)
         # create timers
-        self.scroll_area = QScrollArea(self.main_widget)
+        self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.container_widget = QWidget()
+        self.container_layout = QVBoxLayout()
+        self.container_widget.setLayout(self.container_layout)
+
         #self.scroll_content = QWidget(self.scroll_area)
-        self.timers_frame = QFrame(self.scroll_area)
+        self.timers_frame = QFrame()
+        self.timers_frame.setStyleSheet("margin: 10px;")
+        #self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.scroll_area.setWidget(self.container_widget)
+
         #self.timers_frame = QWidget(self.scroll_area)
-        self.timers_layout = QHBoxLayout(self.timers_frame)
-        self.scroll_area.setLayout(self.timers_layout)
+        self.timers_layout = QHBoxLayout()
+        self.container_layout.addLayout(self.timers_layout)
+        #self.timers_layout.setContentsMargins(10, 10, 10, 10)  # Adjust as needed
+        #self.timers_layout.setSpacing(10)  # Adjust the spacing between widgets
+
+        #self.scroll_area.setLayout(self.timers_layout)
         self.initNoClocksUi()
         if not len(self.timers_data):
             self.no_clocks_frame.show()
@@ -177,8 +201,6 @@ class ClocksApp(QMainWindow):
         #self.add_new_timer_btn.setFlat(True)
         #self.add_new_timer_btn.setStyleSheet("border: 3px solid #e3e3e3;color: #e3e3e3;font-size: 30pt;")
         self.add_new_timer_btn.setStyleSheet("font-size: 30pt;")
-        self.setMaximumWidth(500)
-        self.scroll_area.setWidget(self.timers_frame)
 
 
     def initNoClocksUi(self):
@@ -324,6 +346,17 @@ class ClocksApp(QMainWindow):
 
     # timer methods
     # Events
+    def resizeEvent(self, event):
+        QMainWindow.resizeEvent(self, event)
+        rect = self.rect()
+        # top right
+        self.grips[1].move(rect.right() - self.gripSize, 0)
+        # bottom right
+        self.grips[2].move(
+            rect.right() - self.gripSize, rect.bottom() - self.gripSize)
+        # bottom left
+        self.grips[3].move(0, rect.bottom() - self.gripSize)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragging = True

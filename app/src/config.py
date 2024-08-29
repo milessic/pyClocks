@@ -28,21 +28,28 @@ clockdisplaymode = digital
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
         if len(self.c) < 2:
-            del self.c
-            print("Didn't detect valid config file, creating default one")
-            with open(self.config_path, "w") as f:
-                f.write(self.default_config)
-            self.c = configparser.ConfigParser()
-            self.c.read(self.config_path)
+            self._create_new_config()
 
-        # GENERAL
-        self.applanguage = self.c["GENERAL"]["applanguage"]
-        self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
+        try:
+            # GENERAL
+            self.applanguage = self.c["GENERAL"]["applanguage"]
+            self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
+            self.runastool = bool(int(self.c["GENERAL"]["runastool"]))
 
-        # DISPLAY
-        self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
-        self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
+            # DISPLAY
+            self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
+            self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
+        except:
+            self._create_new_config()
+            
 
+    def _create_new_config(self):
+        del self.c
+        print("Didn't detect valid config file, creating default one")
+        with open(self.config_path, "w") as f:
+            f.write(self.default_config)
+        self.c = configparser.ConfigParser()
+        self.c.read(self.config_path)
 
     def _save_config(self):
         with open(self.config_path, "w") as f:
