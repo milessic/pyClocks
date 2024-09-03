@@ -12,10 +12,12 @@ applanguage = en
 usesystemtopbar = 0
 runastool = 1
 saveinterval = 5
+alwaysontop = 0
 
 [DISPLAY]
 openwindowonstart = 1
 clockdisplaymode = digital
+timerwidth = 250
 
     """
     def __init__(self, app_path):
@@ -36,10 +38,12 @@ clockdisplaymode = digital
             self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
             self.runastool = bool(int(self.c["GENERAL"]["runastool"]))
             self.saveinterval= self.c["GENERAL"]["saveinterval"]
+            self.alwaysontop = self.c["GENERAL"]["alwaysontop"]
 
             # DISPLAY
             self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
             self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
+            self.timerwidth = self.c.get("DISPLAY", "timerwidth")
         except:
             self._create_new_config()
             
@@ -120,6 +124,30 @@ clockdisplaymode = digital
         if value:
             v = "1"
         self.c.set("GENERAL", "runastool", v)
+
+    @property
+    def alwaysontop(self):
+        return bool(int(self.c.get("GENERAL", "alwaysontop")))
+
+    @alwaysontop.setter
+    def alwaysontop(self, value):
+        v = "0"
+        if value:
+            v = "1"
+        self.c.set("GENERAL", "alwaysontop", v)
+
+    @property
+    def timerwidth(self):
+        return int(self.c.get("DISPLAY", "timerwidth"))
+    
+    @timerwidth.setter
+    def timerwidth(self,value):
+        try:
+            value = int(float(value))
+        except:
+            return
+        self.c.set("DISPLAY", "timerwidth", str(value))
+
 
 
 

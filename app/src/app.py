@@ -26,7 +26,8 @@ from PyQt5.QtWidgets import (
         )
 from PyQt5.QtCore import (
         Qt,
-        QTimer
+        QTimer,
+        ws
         )
 import os
 from src.clocks import Clock
@@ -34,7 +35,7 @@ from src.elements import MyTopNav, SettingsController
 from src.config import Config
 from src.random_hex_generator import generate_random_hex
 
-VERSION = "v1.1"
+VERSION = "v1.2"
 class ClocksApp(QMainWindow):
     dragging = False
     timers_data = []
@@ -60,12 +61,14 @@ class ClocksApp(QMainWindow):
             nerd_font:str|None=None
             ):
         super().__init__()
+        self.app_started = False
         self.nerd_font = nerd_font
         self.edit_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "edit_icon.svg"))
         #self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.png"))
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
         self.clocks_app_folder_path = clocks_app_folder_path
         self.config = Config(self.clocks_app_folder_path)
+        self.setMinimumSize(230,231)
         self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
         self.icon_topnav_path = os.path.join(os.path.dirname(__file__),"icon_27.png")
@@ -90,30 +93,34 @@ class ClocksApp(QMainWindow):
             self.setupConfigs(config_data)
         # setup app and UI
         self.initUi()
-        #if self.config.get("always-on-top"):
-        #    self.setWindwowFlags(Qt.WindowStaysOnTopHint | Qt.Window)
+        self._set_window_flags()
+        self.initSettings()
+        self.initTray()
+        self.app_started = True
+        self._adjust_size()
+
+    def _set_window_flags(self):
+        self.flags = []
         if self.custom_top_nav:
             self.gripSize = 16
             self.grips = []
-            for i in range(4):
+            for _ in range(4):
                 grip = QSizeGrip(self)
                 grip.setStyleSheet("background: transparent")
                 grip.resize(self.gripSize, self.gripSize)
                 self.grips.append(grip)
-            if self.config.runastool:
-                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.Tool)
-            else:
-                self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
+            self.flags.append(Qt.FramelessWindowHint)
+        if self.config.runastool:
+            self.flags.append(Qt.Tool)
+        if self.config.alwaysontop:
+            self.flags.append(Qt.WindowStaysOnTopHint )
         else:
-            if self.config.runastool:
-                self.setWindowFlags( Qt.Window | Qt.Tool)
-            else:
-                self.setWindowFlags( Qt.Window )
-        self.setMinimumSize(130,231)
-        if self.config.openwindowonstart:
-            self.show()
-        self.initSettings()
-        self.initTray()
+            print("no on top")
+        flags_to_apply = Qt.Window
+        for flag in self.flags:
+            flags_to_apply |= flag
+        self.setWindowFlags(flags_to_apply)
+        self.show()
 
     def setupTimers(self, timers_data:list[dict]):
         if timers_data:
@@ -177,6 +184,11 @@ class ClocksApp(QMainWindow):
 
         #self.scroll_content = QWidget(self.scroll_area)
         self.timers_frame = QFrame()
+        self.setStyleSheet("""
+        QFrame{
+            border: none;
+        }
+        """)
         self.timers_frame.setStyleSheet("margin: 10px;")
         #self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -214,8 +226,9 @@ class ClocksApp(QMainWindow):
 
     def initNoClocksUi(self):
         self.no_clocks_frame = QFrame()
+        self.no_clocks_frame.setMinimumWidth(self.minimumWidth()-30)
         self.no_clocks_layout = QVBoxLayout(self.no_clocks_frame)
-        self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode \nand click   to create one", self.no_clocks_frame)
+        self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode \nand click  to create\none", self.no_clocks_frame)
         self.no_clocks_add_new_btn = QPushButton("", self.no_clocks_frame)
         if self.nerd_font is not None:
             self.no_clocks_add_new_btn.setFont(QtGui.QFont(self.nerd_font))
@@ -238,6 +251,7 @@ class ClocksApp(QMainWindow):
 
         self.timers_layout.addWidget(self.no_clocks_frame)
         self.no_clocks_frame.hide()
+        self._adjust_size()
 
     def initSettings(self):
         self.settings_window = SettingsController(self)
@@ -300,8 +314,10 @@ class ClocksApp(QMainWindow):
                 self.timers.pop(i)
                 action = self.findChild(QAction, timer.name)
                 self.tray_menu.removeAction(action)
+                self._adjust_size()
         if not len(self.timers):
             self.no_clocks_frame.show()
+            self._adjust_size()
 
                 
     def createClock(self, timer_data:dict, enable_edition:bool=False, update_tray:bool=False):
@@ -314,7 +330,8 @@ class ClocksApp(QMainWindow):
                 timer_data["Time"],
                 isActive=False,
                 color=timer_data["Color"],
-                app=self
+                app=self,
+                timer_width=self.config.timerwidth,
                 )
         # setup frame and layout
         self.timers.append(clock)
@@ -322,6 +339,17 @@ class ClocksApp(QMainWindow):
             clock._enable_edit_mode()
         if update_tray:
             self._append_clock_to_tray(clock)
+        if self.app_started:
+            self._adjust_size()
+
+    def _adjust_size(self):
+        #self.timers_frame.adjustSize()
+        content_width = (self.config.timerwidth + 20) * len(self.timers) 
+        #self.scroll_area.adjustSize()
+        if content_width > self.minimumWidth():
+            self.resize(content_width, self.height() if self.app_started else self.minimumHeight())
+        else:
+            self.resize(self.minimumWidth(), self.height() if self.app_started else self.minimumHeight())
 
     def setupConfigs(self, config_data:dict):
         for k,v in self.default_config.items():
@@ -376,6 +404,10 @@ class ClocksApp(QMainWindow):
 
     def _reload_settings(self):
         self._set_timer_interval()
+        self._set_window_flags()
+        for t in self.timers:
+            t.clock_frame.setFixedWidth(self.config.timerwidth)
+        self._adjust_size()
 
 
     def _update_edit_buttons_geometry(self):

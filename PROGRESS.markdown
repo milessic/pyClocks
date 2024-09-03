@@ -3,6 +3,15 @@ layout: page
 title: Release Notes
 permalink: /progress/
 ---
+# v.1.2
+- [ ] General
+    - [x] - Added always-on-top option (available from options)
+- [ ]  Appearance
+    - [x] - made app as wide to fit all user's clocks by default
+    - [x] - removed this little borders that were visible in light mode 
+    - [ ] - make KDE Plasma appearance as default
+    - [x] - made edit mode not flicker due to button hiding
+
 # v.1.1
 - [x] - general features
     - [x] - add option to not run app as Tool
@@ -34,8 +43,8 @@ permalink: /progress/
 
 ## Appearance
 - [ ] - add analog clock
-- [ ] - make KDE Plasma appearance as default
 - [ ] - make app border rounded
 - [ ] - add language change
 - [ ] - save isActive
 - [ ] - add autoupdate
+- [ ] - add window shadow in frameless

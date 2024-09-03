@@ -17,27 +17,47 @@ from PyQt5.QtCore import Qt
 class SettingsController(QWidget):
     fields = [
             [
-                "Use System Topbar (not recommended)",
+                "Use System Topbar\n\t(not recommended)",
                 "combobox",
                 "usesystemtopbar",
-                ["Yes", "No"]
-                ],
-            [
-                "Run As Tool (visible only from Tray)",
-                "combobox",
-                "runastool",
-                ["Yes", "No"]
+                ["Yes", "No"],
+                True
             ],
             [
-                "Saving interval (in seconds)",
+                "Keep always-on-top",
+                "combobox",
+                "alwaysontop",
+                ["Yes","No"],
+                False
+            ],
+            [
+                "Run As Tool\n\t(visible only from Tray)",
+                "combobox",
+                "runastool",
+                ["Yes", "No"],
+                False
+            ],
+            [
+                "Saving interval\n\t(in seconds)",
                 "input",
                 "saveinterval",
+                None,
+                False
             ],
             [
                 "Open Window When Starting",
                 "combobox",
                 "openwindowonstart",
-                ["Yes", "No"]
+                ["Yes", "No"],
+                True
+
+            ],
+            [
+                "Timer width\n\t(in pixels)",
+                "input",
+                "timerwidth",
+                None,
+                False
             ],
 #            [
 #                "App language",
@@ -55,6 +75,7 @@ class SettingsController(QWidget):
     dragging = False
     def __init__(self, app, custom_top_nav:bool=True):
         super().__init__()
+        self.reload_needed = False
         self.app = app
         self.nerd_font = self.app.nerd_font
         self.icon_topnav_path = self.app.icon_topnav_path
@@ -62,16 +83,24 @@ class SettingsController(QWidget):
         self.custom_top_nav = self.app.custom_top_nav
         self.app_name = self.app.app_name + " Settings"
         self.initUi()
-        if self.custom_top_nav:
-            self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
-        else:
-            pass
+        self._set_window_flags()
+        #if self.custom_top_nav:
+        #    self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window )
+        #else:
+        #    pass
             #self.setWindowFlags(Qt.Window )
 
     # def __del__(self):
         # TODO make additional app that will run and show QMessageBox in this case
         #if not self.custom_top_nav:
         #    QMessageBox.critical(self, "PyClocks Info", "Closing settings closes also app if system topbar is used!")
+
+    def _set_window_flags(self):
+        flags = Qt.Window
+        for flag in self.app.flags:
+            flags |= flag
+        self.setWindowFlags( flags )
+
 
     def initUi(self):
         #self.setWindowTitle(self.app_name)
@@ -100,6 +129,7 @@ class SettingsController(QWidget):
         self.settings_frame = QFrame(self)
         self.main_layout.addWidget(self.settings_frame)
         self.setup_form()
+        self.base_config = self._get_form_data()
 
     def setup_form(self):
         self.form_layout = QVBoxLayout(self.settings_frame)
@@ -143,15 +173,21 @@ class SettingsController(QWidget):
         self.form_btn = QPushButton("Save settings", self)
         self.form_btn.clicked.connect(self._update_config)
         self.form_btn.setMaximumWidth(150)
-        self.settings_saved = QLabel("Settings saved", self)
+        self.settings_saved = QLabel("Settings saved, window may be closed", self)
         self.settings_saved.setStyleSheet("color: green")
         self.settings_saved.hide()
         self.buttons_layout.addWidget(self.form_btn, alignment=Qt.AlignLeft)
         self.buttons_layout.addWidget(self.settings_saved, alignment=Qt.AlignLeft)
         self.form_layout.addLayout(self.buttons_layout)
 
-    def _update_config(self):
-        # read inputs
+    def show(self):
+        super().show()
+        if self.reload_needed:
+            return
+        self.base_config = self._get_form_data()
+
+    def _get_form_data(self) -> list:
+        data = []
         for field in self.fields:
             match field[1]:
                 case "checkbox":
@@ -166,11 +202,28 @@ class SettingsController(QWidget):
                         value = False
                 case _:
                     raise NotImplemented(f"Field type '{field[1]}' is not supported.")
-            setattr(self.app.config, field[2], value)
+            data.append((field[2],value,field[4]))
+        return data
+
+    def _update_config(self):
+        # read inputs
+        data = self._get_form_data()
+        # set values
+        for field in data:
+            setattr(self.app.config, field[0], field[1])
         # save inputs
         self.app.config.update_config_file()
         # show user that it happened
         self.settings_saved.show()
+        for base, actual in zip(self.base_config, data):
+            if not base[2]: # skip if field does not need reset
+                continue
+            if actual[1] != base[1]:
+                self.reload_needed = True
+        if self.reload_needed:
+            QMessageBox.information(self, "pyClocks - reload needed", "Some changes need app restart")
+            self.base_config = self._get_form_data()
+            self.reload_needed = False
         self.app._reload_settings()
 
     def _close(self):
