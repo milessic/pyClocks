@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
         )
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
+from src.styling import Styles
 
 class SettingsController(QWidget):
     fields = [
@@ -108,6 +109,7 @@ class SettingsController(QWidget):
         #self.setCentralWidget(self.main_widget)
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0,0,0,0)
+        self.setStyleSheet(self.app.stylesheet)
         if self.custom_top_nav:
             self.top_nav_frame = QFrame()
             self.top_nav_frame.setContentsMargins(0,0,0,0)

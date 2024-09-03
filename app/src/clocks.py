@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from src.styling import Styles
 from datetime import (
         datetime,
         timezone
@@ -31,7 +32,7 @@ class Clock:
         self.app = app
         self.timer_stylesheet_edit_disabled = self.timer_stylesheet_base + (""
                                  "background:transparent;"                
-                                 f"border: 1px solid {self.app.palette().color(QtGui.QPalette.Background).name()};"
+                                 f"border: none;"
                                  #"border:2px solid #708ebf;"
         )
         self.timer_stylesheet_edit_enabled =self.timer_stylesheet_base + (""
@@ -56,6 +57,7 @@ class Clock:
 
     def initUi(self):
         self.clock_frame = QFrame()
+        self.clock_frame.setObjectName("clockFrame")
         self.clock_frame.setFixedWidth(self.timer_width)
         self.clock_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
@@ -125,6 +127,8 @@ class Clock:
         return datetime.fromtimestamp(time_as_int, timezone.utc).strftime("%H:%M:%S")
 
     def _disable_edit_mode(self):
+        self._update_frame_stylesheet()
+        print(self.clock_name.objectName())
         self.control_time_btn.show()
         self.reset_btn.show()
         self.timer_display.setEnabled(False)
@@ -135,6 +139,13 @@ class Clock:
         self._update_timer_stylesheet()
 
     def _enable_edit_mode(self):
+        if self.isActive:
+            self.timer_display.setObjectName("activeEdit")
+            self.clock_name.setObjectName("activeEdit")
+        else:
+            self.timer_display.setObjectName("disabledEdit")
+            self.clock_name.setObjectName("disabledEdit")
+        self._update_frame_stylesheet()
         self.control_time_btn.hide()
         self.reset_btn.hide()
         self.timer_display.setEnabled(True)
@@ -170,18 +181,9 @@ class Clock:
                 self._update_frame_stylesheet()
 
     def _update_frame_stylesheet(self):
-        self.clock_frame.setStyleSheet(
-                ".QFrame {"
-                f"border-color: {self.color};"
-                "border-width: 2;"
-                "border-style: solid;"
-                "border-radius: 4;"
-                "}"
-                ".QLineEdit{"
-                "background:transparent;"
-                "font-size: 15pt"
-                "}"
-                )
+        stylesheet = getattr(Styles, f"{self.app.config.stylesheet}_timer")#.format(self.color)
+        formated_stylesheet = stylesheet.format(color=f"{self.color}")
+        self.clock_frame.setStyleSheet(formated_stylesheet)
 
     def _update_clock_name(self):
         self.name = self.clock_name.text()
@@ -206,6 +208,30 @@ class Clock:
         self.count = 0
         
     def _update_timer_stylesheet(self):
+        if self.isActive:
+            if self.edit_mode:
+                print("activeEdit")
+                self.timer_display.setObjectName("activeEdit")
+                self.clock_name.setObjectName("activeEdit")
+            else:
+                print("active")
+                self.timer_display.setObjectName("active")
+                self.clock_name.setObjectName("active")
+        else:
+            if self.edit_mode:
+                print("disabledEdit")
+                self.timer_display.setObjectName("disabledEdit")
+                self.clock_name.setObjectName("disabledEdit")
+            else:
+                print("disabled")
+                self.timer_display.setObjectName("disabled")
+                self.clock_name.setObjectName("disabled")
+        self._update_frame_stylesheet()
+        self._update_frame_stylesheet()
+        self._update_frame_stylesheet()
+
+
+        return
         enabled = self.default_enabled_color
         disabled = "#989898"
         if self.edit_mode:

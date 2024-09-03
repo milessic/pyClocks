@@ -34,6 +34,7 @@ from src.clocks import Clock
 from src.elements import MyTopNav, SettingsController
 from src.config import Config
 from src.random_hex_generator import generate_random_hex
+from src.styling import Styles
 
 VERSION = "v1.2"
 class ClocksApp(QMainWindow):
@@ -68,7 +69,8 @@ class ClocksApp(QMainWindow):
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
         self.clocks_app_folder_path = clocks_app_folder_path
         self.config = Config(self.clocks_app_folder_path)
-        self.setMinimumSize(230,231)
+        self.stylesheet = getattr(Styles,self.config.stylesheet) 
+        self.setMinimumSize(250,231)
         self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
         self.icon_topnav_path = os.path.join(os.path.dirname(__file__),"icon_27.png")
@@ -98,6 +100,7 @@ class ClocksApp(QMainWindow):
         self.initTray()
         self.app_started = True
         self._adjust_size()
+        self.setStyleSheet(self.stylesheet)
 
     def _set_window_flags(self):
         self.flags = []
@@ -184,11 +187,6 @@ class ClocksApp(QMainWindow):
 
         #self.scroll_content = QWidget(self.scroll_area)
         self.timers_frame = QFrame()
-        self.setStyleSheet("""
-        QFrame{
-            border: none;
-        }
-        """)
         self.timers_frame.setStyleSheet("margin: 10px;")
         #self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.timers_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -226,6 +224,7 @@ class ClocksApp(QMainWindow):
 
     def initNoClocksUi(self):
         self.no_clocks_frame = QFrame()
+        self.no_clocks_frame.setObjectName("noClocksFrame")
         self.no_clocks_frame.setMinimumWidth(self.minimumWidth()-30)
         self.no_clocks_layout = QVBoxLayout(self.no_clocks_frame)
         self.no_clocks_label = QLabel("There are no clocks\nEnter edit mode \nand click  to create\none", self.no_clocks_frame)
@@ -238,14 +237,6 @@ class ClocksApp(QMainWindow):
         sp_retain = self.no_clocks_add_new_btn.sizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
         self.no_clocks_add_new_btn.setSizePolicy(sp_retain)
-        self.no_clocks_frame.setStyleSheet("""
-            .QFrame{
-                border: 3px solid #FFFFFF;
-            }
-            .QLabel{
-                font-size: 12pt;
-            }
-        """)
         self.no_clocks_layout.addWidget(self.no_clocks_label)
         self.no_clocks_layout.addWidget(self.no_clocks_add_new_btn)
 

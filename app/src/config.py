@@ -20,6 +20,7 @@ clockdisplaymode = digital
 timerwidth = 250
 
     """
+    stylesheet = "light"
     def __init__(self, app_path):
         self.platform = platform.system()
         self.pyclocks_path = Path(app_path)
