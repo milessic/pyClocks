@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from src.styling import Styles
 from datetime import (
         datetime,
         timezone
@@ -27,19 +28,21 @@ class Clock:
     timer_stylesheet_base = (""
             "font-size: 14pt;"
                            )
-    timer_stylesheet_edit_disabled = timer_stylesheet_base + (""
-                             "background:transparent;"                
-                             #"border:2px solid #708ebf;"
-    )
-    timer_stylesheet_edit_enabled =timer_stylesheet_base + (""
-                             "background:transparent;"                
-                             "border:2px solid #708ebf;"
-                              "border-radius: 5px;"
-
-    )
-    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, tray_action=None, tray_object=None, app=None):
-        self.parent = parent
+    def __init__(self, parent, timer_id:int, name:str, count:int, isActive:bool, color:str, timer_width:int,tray_action=None, tray_object=None, app=None):
         self.app = app
+        self.timer_stylesheet_edit_disabled = self.timer_stylesheet_base + (""
+                                 "background:transparent;"                
+                                 f"border: none;"
+                                 #"border:2px solid #708ebf;"
+        )
+        self.timer_stylesheet_edit_enabled =self.timer_stylesheet_base + (""
+                                 "background:transparent;"                
+                                 "border:2px solid #708ebf;"
+                                  "border-radius: 5px;"
+
+        )
+        self.timer_width = timer_width
+        self.parent = parent
         self.timer_id = timer_id
         self.name = name
         self.count = count
@@ -54,9 +57,11 @@ class Clock:
 
     def initUi(self):
         self.clock_frame = QFrame()
+        self.clock_frame.setObjectName("clockFrame")
+        self.clock_frame.setFixedWidth(self.timer_width)
         self.clock_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
-        self.clock_frame.setMinimumWidth(150)
+        #self.clock_frame.setMinimumWidth(150)
         self._update_frame_stylesheet()
         self.clock_layout = QVBoxLayout(self.clock_frame)
         # setup label
@@ -85,20 +90,18 @@ class Clock:
         # setup buttons
         self.control_time_btn = QPushButton("Start", self.clock_frame)
         self.control_time_btn.clicked.connect(lambda: self._control_time())
-        self.control_time_mockup_label = QLabel(self.clock_frame)
-        self.control_time_mockup_label.hide()
         #self.stop_btn = QPushButton("Stop", self.clock_frame)
         #self.stop_btn.clicked.connect(lambda: self._stop_time())
         self.reset_btn = QPushButton("Reset", self.clock_frame)
         self.reset_btn.clicked.connect(lambda: self._reset_time())
-        self.reset_mockup_label = QLabel(self.clock_frame)
-        self.reset_mockup_label.hide()
+        sp_retain = self.reset_btn.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.reset_btn.setSizePolicy(sp_retain)
+        self.control_time_btn.setSizePolicy(sp_retain)
         # pack buttson
         self.clock_layout.addWidget(self.control_time_btn)
-        self.clock_layout.addWidget(self.control_time_mockup_label)
         #self.clock_layout.addWidget(self.stop_btn)
         self.clock_layout.addWidget(self.reset_btn)
-        self.clock_layout.addWidget(self.reset_mockup_label)
         # append clock
         self.parent.addWidget(self.clock_frame)
         self.delete_btn = QPushButton("", self.clock_frame)
@@ -124,10 +127,9 @@ class Clock:
         return datetime.fromtimestamp(time_as_int, timezone.utc).strftime("%H:%M:%S")
 
     def _disable_edit_mode(self):
+        self._update_frame_stylesheet()
         self.control_time_btn.show()
         self.reset_btn.show()
-        self.control_time_mockup_label.hide()
-        self.reset_mockup_label.hide()
         self.timer_display.setEnabled(False)
         self.clock_name.setEnabled(False)
         self.delete_btn.hide()
@@ -136,10 +138,15 @@ class Clock:
         self._update_timer_stylesheet()
 
     def _enable_edit_mode(self):
+        if self.isActive:
+            self.timer_display.setObjectName("activeEdit")
+            self.clock_name.setObjectName("activeEdit")
+        else:
+            self.timer_display.setObjectName("disabledEdit")
+            self.clock_name.setObjectName("disabledEdit")
+        self._update_frame_stylesheet()
         self.control_time_btn.hide()
         self.reset_btn.hide()
-        #self.control_time_mockup_label.show()
-        self.reset_mockup_label.show()
         self.timer_display.setEnabled(True)
         self.clock_name.setEnabled(True)
         self.delete_btn.show()
@@ -173,18 +180,10 @@ class Clock:
                 self._update_frame_stylesheet()
 
     def _update_frame_stylesheet(self):
-        self.clock_frame.setStyleSheet(
-                ".QFrame {"
-                f"border-color: {self.color};"
-                "border-width: 2;"
-                "border-style: solid;"
-                "border-radius: 4;"
-                "}"
-                ".QLineEdit{"
-                "background:transparent;"
-                "font-size: 15pt"
-                "}"
-                )
+        theme = f"{self.app.config.stylesheet}_timer"#.format(self.color)
+        stylesheet = getattr(Styles, theme)
+        formated_stylesheet = stylesheet.format(color=f"{self.color}")
+        self.clock_frame.setStyleSheet(formated_stylesheet)
 
     def _update_clock_name(self):
         self.name = self.clock_name.text()
@@ -209,6 +208,26 @@ class Clock:
         self.count = 0
         
     def _update_timer_stylesheet(self):
+        if self.isActive:
+            if self.edit_mode:
+                self.timer_display.setObjectName("activeEdit")
+                self.clock_name.setObjectName("activeEdit")
+            else:
+                self.timer_display.setObjectName("active")
+                self.clock_name.setObjectName("active")
+        else:
+            if self.edit_mode:
+                self.timer_display.setObjectName("disabledEdit")
+                self.clock_name.setObjectName("disabledEdit")
+            else:
+                self.timer_display.setObjectName("disabled")
+                self.clock_name.setObjectName("disabled")
+        self._update_frame_stylesheet()
+        self._update_frame_stylesheet()
+        self._update_frame_stylesheet()
+
+
+        return
         enabled = self.default_enabled_color
         disabled = "#989898"
         if self.edit_mode:

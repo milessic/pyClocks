@@ -3,6 +3,19 @@ layout: page
 title: Release Notes
 permalink: /progress/
 ---
+# v.1.2
+- [x] - General
+    - [x] - Added always-on-top option (available from options)
+- [x] - Appearance
+    - [x] - made app as wide to fit all user's clocks by default
+    - [x] - removed this little borders that were visible in light mode 
+    - [x] - made edit mode not flicker due to button hiding
+    - [x] - corrected separator placement in system tray 
+- [x] Fixes
+    - [x] -  Grip points don't work on Windwos #7 
+    - [x] - App doesn't load when clock file is corrupted 
+
+
 # v.1.1
 - [x] - general features
     - [x] - add option to not run app as Tool
@@ -34,8 +47,8 @@ permalink: /progress/
 
 ## Appearance
 - [ ] - add analog clock
-- [ ] - make KDE Plasma appearance as default
 - [ ] - make app border rounded
 - [ ] - add language change
 - [ ] - save isActive
 - [ ] - add autoupdate
+- [ ] - add window shadow in frameless
