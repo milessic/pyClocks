@@ -13,7 +13,7 @@ Additionally, app now auto-adjust it's size to fit all the clocks that can fit t
 
 Aparat of that ``always-on-top`` option was added, also available from ``Settings``
 
-<img src="/pyClocks/assets/v1_2_demo.png" alt="v1.2"></img>
+<img src="/pyClocks/assets/v1_2_demo.png" alt="v1.2">
 
 ### Release notes
 #### General features
