@@ -36,7 +36,7 @@ class SettingsController(QWidget):
                 "combobox",
                 "alwaysontop",
                 ["Yes","No"],
-                False
+                True
             ],
             [
                 "󱊖  Run As Tool\n\t(visible only from Tray)",

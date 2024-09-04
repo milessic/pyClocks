@@ -52,3 +52,6 @@ permalink: /progress/
 - [ ] - save isActive
 - [ ] - add autoupdate
 - [ ] - add window shadow in frameless
+- [ ] - make tray exepreience better
+    - [ ] - better oppneing from tray for app
+    - [ ] - better oppneing from tray for settings

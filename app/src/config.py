@@ -30,6 +30,7 @@ timerwidth = 250
         #case "Darwin":
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
+        print({section: dict(self.c[section]) for section in self.c.sections()})
         if len(self.c) < 2:
             self._create_new_config()
 
@@ -39,7 +40,9 @@ timerwidth = 250
             self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
             self.runastool = bool(int(self.c["GENERAL"]["runastool"]))
             self.saveinterval= self.c["GENERAL"]["saveinterval"]
-            self.alwaysontop = self.c["GENERAL"]["alwaysontop"]
+            print("rraeda", self.c["GENERAL"]["alwaysontop"])
+            self.alwaysontop = self.c["GENERAL"]["alwaysontop"] # FIXME setting alwaysontop as 1
+            print("rr22",self.alwaysontop)
 
             # DISPLAY
             self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
@@ -82,10 +85,10 @@ timerwidth = 250
 
     @usesystemtopbar.setter
     def usesystemtopbar(self, value:bool):
-        if value:
-            self._usesystemtopbar = "1"
-        else:
+        if not value or str(value) == "0":
             self._usesystemtopbar = "0"
+        else:
+            self._usesystemtopbar = "1"
         self.c.set("GENERAL", "usesystemtopbar", self._usesystemtopbar)
 
     @property
@@ -122,8 +125,9 @@ timerwidth = 250
 
     @runastool.setter
     def runastool(self, value):
-        v = "0"
-        if value:
+        if not value or str(value) == "0":
+            v = "0"
+        else:
             v = "1"
         self.c.set("GENERAL", "runastool", v)
 
@@ -133,8 +137,9 @@ timerwidth = 250
 
     @alwaysontop.setter
     def alwaysontop(self, value):
-        v = "0"
-        if value:
+        if not value or str(value) == "0":
+            v = "0"
+        else:
             v = "1"
         self.c.set("GENERAL", "alwaysontop", v)
 

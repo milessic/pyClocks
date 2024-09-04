@@ -46,9 +46,6 @@ class ClocksApp(QMainWindow):
     app_name = "PyClocks"
     version = VERSION
     short_description = app_name + " " + version + " - " + "milessic, 2024"
-    default_config = {
-            "always-on-top": True
-            }
     timer_i = -1
     start_date = datetime.now().strftime("%y-%m-%d")
     edit_mode = False
@@ -107,8 +104,6 @@ class ClocksApp(QMainWindow):
         self.setupTimers(timers_data)
 
         # setup configs
-        if config_data is not None:
-            self.setupConfigs(config_data)
         # setup app and UI
         self.initUi()
         self._set_window_flags()
@@ -355,9 +350,6 @@ class ClocksApp(QMainWindow):
         else:
             self.resize(self.minimumWidth(), self.height() if self.app_started else self.minimumHeight())
 
-    def setupConfigs(self, config_data:dict):
-        for k,v in self.default_config.items():
-            self.config[k] = config_data.get(k, v) 
 
     def _validate_timer_data(self, timer_data:dict) -> bool:
         validation_passed = True
