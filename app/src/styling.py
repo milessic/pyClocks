@@ -9,6 +9,17 @@ class Styles:
         QFrame{
             border: none;
         }
+        QFrame#noClocksFrame{
+        """
+            f"border: 3px solid {app.palette().color(QPalette.WindowText).name()};"
+        """
+        }
+        QFrame#noClocksFrame>QLabel {
+                font-size: 12pt;
+        """
+            f"color: 3px solid {app.palette().color(QPalette.WindowText).name()};"
+        """
+            }
         QFrame#topNav {
             background: #1e1e1e;
             border: none;
