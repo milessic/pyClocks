@@ -1,9 +1,73 @@
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QApplication
+
+
 class Styles:
-    system = """
+    # SYSTEM
+    app = QApplication([])
+    system = ("""
         QFrame{
             border: none;
         }
+        QFrame#topNav {
+            background: #1e1e1e;
+            border: none;
+            }
+        QFrame#topNav>QPushButton {
+            background: #1e1e1e;
+            }
+        QFrame#topNav>QLabel{
+            background: #1e1e1e;
+        }
+        """)
+    system_timer = ("""
+        QFrame#clockFrame{{
+            border-color: {color};
+            border-width: 3;
+            border-style: solid;
+            border-radius: 4;
+        }}
+        QFrame#clockFrame>.QLineEdit{{
+            background:transparent;
+            font-size: 15pt;
+        }}
         """
+        """
+        QLineEdit#active,QLabel#active{{
+        """
+            f"color: {app.palette().color(QPalette.WindowText).name()};"
+        """
+            background:transparent;               
+            border: none;
+        }}
+        QLineEdit#disabled,QLabel#disabled{{
+            """
+            f"color: {app.palette().color(QPalette.Shadow).name()};"
+            """
+            border: none;
+        }}
+        QLineEdit#activeEdit,QLabel#activeEdit{{
+        """
+            f"color: {app.palette().color(QPalette.WindowText).name()};"
+        """
+            background:transparent;               
+            border:2px solid #708ebf;
+            border-radius: 5px;
+        }}
+        QLineEdit#disabledEdit,QLabel#disabledEdit{{
+        """
+            f"color: {app.palette().color(QPalette.Shadow).name()};"
+        """
+            background:transparent;               
+            border:2px solid #708ebf;
+            border-radius: 5px;
+        }}
+    """)
+    print(app.palette().color(QPalette.BrightText).name())
+    app.exit()
+    del(app)
+
+    # LIGTH MODE
     light = """
         
         QMainWindow,QWidget {
@@ -21,6 +85,16 @@ class Styles:
                 font-size: 12pt;
                 color: #1e1e1e;
             }
+        QFrame#topNav {
+            background: #1e1e1e;
+            border: none;
+            }
+        QFrame#topNav>QPushButton {
+            background: #1e1e1e;
+            }
+        QFrame#topNav>QLabel{
+            background: #1e1e1e;
+        }
     """
     light_timer = """
         QFrame#clockFrame{{
@@ -43,6 +117,7 @@ class Styles:
             border: none;
         }}
         QLineEdit#activeEdit,QLabel#activeEdit{{
+            color: #1e1e1e;
             background:transparent;               
             border:2px solid #708ebf;
             border-radius: 5px;
@@ -55,8 +130,77 @@ class Styles:
         }}
 
     """
+        
+    # DARK MODE 
     dark = """
-            #no_clocks_frame{
-                border: 3px solid #FFFFFF;
+        QMainWindow,QWidget {
+            background: #121212;
+            color: #FFFFFF;
+        }
+        QFrame{
+            border: none;
+            background: #121212;
+        }
+        QFrame#noClocksFrame{
+            border: 3px solid #FFFFFF;
+        }
+        QFrame#noClocksFrame>QLabel {
+                font-size: 12pt;
+                color: #FFFFFF;
             }
+        QFrame#topNav {
+            background: #1e1e1e;
+            border: none;
+            }
+        QFrame#topNav>QPushButton {
+            background: #1e1e1e;
+            }
+        QFrame#topNav>QLabel{
+            background: #1e1e1e;
+        }
             """
+    dark_timer = """
+        QFrame#clockFrame{{
+            border-color: {color};
+            border-width: 3;
+            border-style: solid;
+            border-radius: 4;
+        }}
+        QFrame#clockFrame>.QLineEdit{{
+            background:transparent;
+            font-size: 15pt;
+        }}
+        QLineEdit#active,QLabel#active{{
+            color: #FFFFFF;
+            background:transparent;               
+            border: none;
+        }}
+        QLineEdit#disabled,QLabel#disabled{{
+            color: #989898;
+            border: none;
+        }}
+        QLineEdit#activeEdit,QLabel#activeEdit{{
+            color: #FFFFFF;
+            background:transparent;               
+            border:2px solid #708ebf;
+            border-radius: 5px;
+        }}
+        QLineEdit#disabledEdit,QLabel#disabledEdit{{
+            color: #989898;
+            background:transparent;               
+            border:2px solid #708ebf;
+            border-radius: 5px;
+        }}
+
+    """
+    def return_style_names(self):
+        return [style for style in Styles.__dict__.keys() if not(style.endswith("_timer")) and not(style.startswith("__"))][:-1]
+
+
+
+if __name__ == "__main__":
+    print("---ignore above console logs---")
+    #for att in [style for style in Styles.__dict__.keys() if not(style.endswith("_timer")) and not(style.startswith("__"))]:
+    for att in Styles().return_style_names():
+        print(att)
+        pass

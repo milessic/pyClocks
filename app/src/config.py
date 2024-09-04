@@ -11,16 +11,16 @@ class Config:
 applanguage = en
 usesystemtopbar = 0
 runastool = 1
-saveinterval = 5
+saveinterval = 60
 alwaysontop = 0
 
 [DISPLAY]
+stylesheet = system
 openwindowonstart = 1
 clockdisplaymode = digital
 timerwidth = 250
 
     """
-    stylesheet = "light"
     def __init__(self, app_path):
         self.platform = platform.system()
         self.pyclocks_path = Path(app_path)
@@ -45,6 +45,7 @@ timerwidth = 250
             self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))
             self.clockdisplaymode = self.c.get("DISPLAY", "clockdisplaymode")
             self.timerwidth = self.c.get("DISPLAY", "timerwidth")
+            self.stylesheet = self.c.get("DISPLAY", "stylesheet")
         except:
             self._create_new_config()
             
@@ -148,6 +149,17 @@ timerwidth = 250
         except:
             return
         self.c.set("DISPLAY", "timerwidth", str(value))
+
+    @property
+    def stylesheet(self):
+        return self.c.get("DISPLAY", "stylesheet")
+
+    @stylesheet.setter
+    def stylesheet(self, value):
+        # TODO add validation
+        self.c.set("DISPLAY", "stylesheet", value)
+
+
 
 
 

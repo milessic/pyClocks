@@ -18,35 +18,42 @@ from src.styling import Styles
 class SettingsController(QWidget):
     fields = [
             [
-                "Use System Topbar\n\t(not recommended)",
+                "  App look",
+                "combobox",
+                "stylesheet",
+                Styles().return_style_names(),
+                False
+            ],
+            [
+                "󱔓  Use System Topbar\n\t(not recommended)",
                 "combobox",
                 "usesystemtopbar",
                 ["Yes", "No"],
                 True
             ],
             [
-                "Keep always-on-top",
+                "  Keep always-on-top",
                 "combobox",
                 "alwaysontop",
                 ["Yes","No"],
                 False
             ],
             [
-                "Run As Tool\n\t(visible only from Tray)",
+                "󱊖  Run As Tool\n\t(visible only from Tray)",
                 "combobox",
                 "runastool",
                 ["Yes", "No"],
                 False
             ],
             [
-                "Saving interval\n\t(in seconds)",
+                "󰅒  Saving interval\n\t(in seconds)",
                 "input",
                 "saveinterval",
                 None,
                 False
             ],
             [
-                "Open Window When Starting",
+                "  Open Window When Starting",
                 "combobox",
                 "openwindowonstart",
                 ["Yes", "No"],
@@ -54,7 +61,7 @@ class SettingsController(QWidget):
 
             ],
             [
-                "Timer width\n\t(in pixels)",
+                "  Timer width\n\t(in pixels)",
                 "input",
                 "timerwidth",
                 None,
@@ -109,21 +116,22 @@ class SettingsController(QWidget):
         #self.setCentralWidget(self.main_widget)
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0,0,0,0)
-        self.setStyleSheet(self.app.stylesheet)
+        self._update_stylesheet()
         if self.custom_top_nav:
             self.top_nav_frame = QFrame()
             self.top_nav_frame.setContentsMargins(0,0,0,0)
             self.top_nav_frame.setFixedHeight(30)
-            self.top_nav_frame.setStyleSheet("""
-            QFrame {
-            background: #1e1e1e;
-            border: none;
-            }
-            QPushButton {
-            background: #1e1e1e;
-            }
-            """
-            )
+            #self.top_nav_frame.setStyleSheet("""
+            #QFrame {
+            #background: #1e1e1e;
+            #border: none;
+
+            #}
+            #QPushButton {
+            #background: #1e1e1e;
+            #}
+            #"""
+            #)
             self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path)
 
             self.main_layout.addWidget(self.top_nav_frame)
@@ -132,6 +140,9 @@ class SettingsController(QWidget):
         self.main_layout.addWidget(self.settings_frame)
         self.setup_form()
         self.base_config = self._get_form_data()
+
+    def _update_stylesheet(self):
+        self.setStyleSheet(self.app.stylesheet)
 
     def setup_form(self):
         self.form_layout = QVBoxLayout(self.settings_frame)
@@ -261,6 +272,7 @@ class MyTopNav():
         self.initUi()
 
     def initUi(self):
+            self.parent.setObjectName("topNav")
             self.top_nav = QHBoxLayout(self.parent)
             
             self.top_nav.setContentsMargins(0,0,0,0)
@@ -337,3 +349,4 @@ class MyTopNav():
             # add Layouts
             self.top_nav.addLayout(self.top_nav_left)
             self.top_nav.addLayout(self.top_nav_right)
+

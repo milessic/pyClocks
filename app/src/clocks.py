@@ -181,7 +181,8 @@ class Clock:
                 self._update_frame_stylesheet()
 
     def _update_frame_stylesheet(self):
-        stylesheet = getattr(Styles, f"{self.app.config.stylesheet}_timer")#.format(self.color)
+        theme = f"{self.app.config.stylesheet}_timer"#.format(self.color)
+        stylesheet = getattr(Styles, theme)
         formated_stylesheet = stylesheet.format(color=f"{self.color}")
         self.clock_frame.setStyleSheet(formated_stylesheet)
 

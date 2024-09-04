@@ -35,8 +35,9 @@ from src.elements import MyTopNav, SettingsController
 from src.config import Config
 from src.random_hex_generator import generate_random_hex
 from src.styling import Styles
+from src.__init__ import VERSION
 
-VERSION = "v1.2"
+
 class ClocksApp(QMainWindow):
     dragging = False
     timers_data = []
@@ -69,7 +70,7 @@ class ClocksApp(QMainWindow):
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
         self.clocks_app_folder_path = clocks_app_folder_path
         self.config = Config(self.clocks_app_folder_path)
-        self.stylesheet = getattr(Styles,self.config.stylesheet) 
+        self._update_stylesheet()
         self.setMinimumSize(250,231)
         self.custom_top_nav = not self.config.usesystemtopbar
         self.icon_path = os.path.join(os.path.dirname(__file__),"icon.png")
@@ -100,7 +101,6 @@ class ClocksApp(QMainWindow):
         self.initTray()
         self.app_started = True
         self._adjust_size()
-        self.setStyleSheet(self.stylesheet)
 
     def _set_window_flags(self):
         self.flags = []
@@ -163,16 +163,16 @@ class ClocksApp(QMainWindow):
             self.top_nav_frame = QFrame()
             self.top_nav_frame.setContentsMargins(0,0,0,0)
             self.top_nav_frame.setFixedHeight(30)
-            self.top_nav_frame.setStyleSheet("""
-            QFrame {
-            background: #1e1e1e;
-            border: none;
-            }
-            QPushButton {
-            background: #1e1e1e;
-            }
-            """
-            )
+            #self.top_nav_frame.setStyleSheet("""
+            #QFrame {
+            #background: #1e1e1e;
+            #border: none;
+            #}
+            #QPushButton {
+            #background: #1e1e1e;
+            #}
+            #"""
+            #)
             self.top_nav = MyTopNav(self, self.top_nav_frame, self.icon_topnav_path, True, True)
             self.topnav_height = self.top_nav_frame.height()
             self.main_layout.addWidget(self.top_nav_frame)
@@ -252,11 +252,11 @@ class ClocksApp(QMainWindow):
         self.tray_menu = QMenu()
         #show_action = QAction("Show", self)
         #show_action.triggered.connect(self.show_window)
-        self.tray_menu.addSeparator()
         self.tray_menu.addAction("Show app", self.show_window)
         self.tray_menu.addAction("Edit Mode", self._control_edit_mode)
         self.tray_menu.addAction("Settings", self.show_settings)
         self.tray_menu.addAction("Exit", sys.exit)
+        self.tray_menu.addSeparator()
         for t in self.timers:
             self._append_clock_to_tray(t)
         self.tray.setContextMenu(self.tray_menu)
@@ -398,8 +398,18 @@ class ClocksApp(QMainWindow):
         self._set_window_flags()
         for t in self.timers:
             t.clock_frame.setFixedWidth(self.config.timerwidth)
+            t._update_frame_stylesheet()
         self._adjust_size()
+        self._update_stylesheet()
 
+
+    def _update_stylesheet(self):
+        self.stylesheet = getattr(Styles,self.config.stylesheet) 
+        self.setStyleSheet(self.stylesheet)
+        try:
+            self.settings_window._update_stylesheet()
+        except:
+            pass
 
     def _update_edit_buttons_geometry(self):
         # set + button geometry
