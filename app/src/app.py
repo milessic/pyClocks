@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (
         QHBoxLayout,
         QVBoxLayout,
         QWidget,
+        QInputDialog,
         )
 from PyQt5.QtCore import (
         Qt,
@@ -80,15 +81,29 @@ class ClocksApp(QMainWindow):
         self.setWindowIcon(self.icon)
         self.timers_data_path = timers_data_path
         self.history_file = os.path.join(self.clocks_app_folder_path, "history_" + self.start_date + os.path.basename(self.timers_data_path))
-        timers_data = {}
+        timers_data = []
         try:
             timers_data = json.load(open(self.timers_data_path, "r"))
         except FileNotFoundError:
             #QMessageBox.critical(self, "Could not find Clocks file", f"Could not find clocks file under '{self.timers_data_path}'!")
             pass
         except Exception as e:
-            QMessageBox.critical(self, "Could not load Clocks file", f"Could not laod clocks file located under '{self.timers_data_path}' due to {type(e).__name__}: {e}!")
-            exit()
+            #QMessageBox.critical(self, "Could not load Clocks file", f"Could not laod clocks file located under '{self.timers_data_path}' due to {type(e).__name__}: {e}!")
+            create_new_box = QMessageBox()
+            create_new_box.setWindowIcon(self.icon)
+            create_new_box.setIcon(QMessageBox.Critical)
+            create_new_box.setWindowTitle("Invalid clocks file detected")
+            create_new_box.setText(f"Invalid clocks file found under '{self.timers_data_path}'\nDo you want to delete it and continue with new timers?'")
+            create_new_box.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
+            button_y = create_new_box.button(QMessageBox.Yes)
+            button_y.setText("Yes")
+            button_n = create_new_box.button(QMessageBox.No)
+            button_n.setText("No")
+            create_new_box.exec_()
+            if create_new_box.clickedButton() == button_n:
+                exit()
+            if create_new_box.clickedButton() == button_y:
+                self.timers_data = []
         self.setupTimers(timers_data)
 
         # setup configs
