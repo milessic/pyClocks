@@ -12,6 +12,17 @@ permalink: /downloads/
 ## Windows
 - [exe][exe]
 
+## Compatiblity
+### Windows
+Tested on Windows 10
+
+### Linux
+Tested on:
+- Ubuntu Studio 22.04
+- Fedora LXDE 40.1
+- Ubuntu Budgie 22.04
+
+If app does not work on your system, please contact [pyclocks@gmail.com](mailto:pyclocks@gmail.com?subject=pyClocks%20Question%20or%20Bug)
 
 
 [src]: https://github.com/milessic/pyClocks
