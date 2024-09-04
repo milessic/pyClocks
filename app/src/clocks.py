@@ -128,7 +128,6 @@ class Clock:
 
     def _disable_edit_mode(self):
         self._update_frame_stylesheet()
-        print(self.clock_name.objectName())
         self.control_time_btn.show()
         self.reset_btn.show()
         self.timer_display.setEnabled(False)
@@ -211,20 +210,16 @@ class Clock:
     def _update_timer_stylesheet(self):
         if self.isActive:
             if self.edit_mode:
-                print("activeEdit")
                 self.timer_display.setObjectName("activeEdit")
                 self.clock_name.setObjectName("activeEdit")
             else:
-                print("active")
                 self.timer_display.setObjectName("active")
                 self.clock_name.setObjectName("active")
         else:
             if self.edit_mode:
-                print("disabledEdit")
                 self.timer_display.setObjectName("disabledEdit")
                 self.clock_name.setObjectName("disabledEdit")
             else:
-                print("disabled")
                 self.timer_display.setObjectName("disabled")
                 self.clock_name.setObjectName("disabled")
         self._update_frame_stylesheet()

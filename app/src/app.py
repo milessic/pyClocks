@@ -132,8 +132,6 @@ class ClocksApp(QMainWindow):
             self.flags.append(Qt.Tool)
         if self.config.alwaysontop:
             self.flags.append(Qt.WindowStaysOnTopHint )
-        else:
-            print("no on top")
         flags_to_apply = Qt.Window
         for flag in self.flags:
             flags_to_apply |= flag

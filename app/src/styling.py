@@ -74,7 +74,6 @@ class Styles:
             border-radius: 5px;
         }}
     """)
-    print(app.palette().color(QPalette.BrightText).name())
     app.exit()
     del(app)
 
@@ -208,10 +207,3 @@ class Styles:
         return [style for style in Styles.__dict__.keys() if not(style.endswith("_timer")) and not(style.startswith("__"))][:-1]
 
 
-
-if __name__ == "__main__":
-    print("---ignore above console logs---")
-    #for att in [style for style in Styles.__dict__.keys() if not(style.endswith("_timer")) and not(style.startswith("__"))]:
-    for att in Styles().return_style_names():
-        print(att)
-        pass
