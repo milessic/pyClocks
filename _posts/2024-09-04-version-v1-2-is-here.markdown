@@ -31,7 +31,7 @@ Aparat of that ``always-on-top`` option was added, also available from ``Setting
 - Corrected separator placement in system tray 
 
 #### Fixes
-- [Grip points don't work on Windwos #7][issue4]
+- [Grip points don't work on Windwos #7][issue7]
 - [App doesn't load when clock file is corrupted #8][issue8]
 
 [Go to downloads][downloads]
