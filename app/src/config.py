@@ -30,7 +30,6 @@ timerwidth = 250
         #case "Darwin":
         self.c = configparser.ConfigParser()
         self.c.read(self.config_path)
-        print({section: dict(self.c[section]) for section in self.c.sections()})
         if len(self.c) < 2:
             self._create_new_config()
 
@@ -40,9 +39,7 @@ timerwidth = 250
             self.usesystemtopbar = bool(int(self.c.get("GENERAL", "usesystemtopbar")))
             self.runastool = bool(int(self.c["GENERAL"]["runastool"]))
             self.saveinterval= self.c["GENERAL"]["saveinterval"]
-            print("rraeda", self.c["GENERAL"]["alwaysontop"])
             self.alwaysontop = self.c["GENERAL"]["alwaysontop"] # FIXME setting alwaysontop as 1
-            print("rr22",self.alwaysontop)
 
             # DISPLAY
             self.openwindowonstart = bool(int(self.c.get("DISPLAY", "openwindowonstart")))

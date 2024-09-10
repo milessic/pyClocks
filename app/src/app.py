@@ -262,6 +262,7 @@ class ClocksApp(QMainWindow):
         #show_action.triggered.connect(self.show_window)
         self.tray_menu.addAction("Show app", self.show_window)
         self.tray_menu.addAction("Edit Mode", self._control_edit_mode)
+        self.tray_menu.addAction("Reset All", self._reset_all_clocks)
         self.tray_menu.addAction("Settings", self.show_settings)
         self.tray_menu.addAction("Exit", sys.exit)
         self.tray_menu.addSeparator()
@@ -304,6 +305,9 @@ class ClocksApp(QMainWindow):
                 timer._disable_edit_mode()
                 self._check_timers_for_deletion()
 
+    def _reset_all_clocks(self):
+        for t in self.timers:
+            t._reset_time()
 
     def _check_timers_for_deletion(self):
         for i,timer in enumerate(self.timers):
