@@ -4,10 +4,8 @@ title: Release Notes
 permalink: /progress/
 ---
 # v1.3
-- [ ] - General
-    - [ ] - make tray exepreience better
-        - [ ] - better oppneing from tray for app
-        - [ ] - better oppneing from tray for settings
+- [x] - General
+    - [x] - make tray exepreience better
         - [x] - Added 'Reset All' option in the tray 
 # v.1.2
 - [x] - General
@@ -50,6 +48,9 @@ permalink: /progress/
 ## General
 - [ ] - Add dropdown to open recent clock-sets
 - [ ] - Add warning time
+- [ ] - make tray exepreience better
+    - [ ] - better oppneing from tray for app
+    - [ ] - better oppneing from tray for settings
 
 ## Appearance
 - [ ] - add analog clock

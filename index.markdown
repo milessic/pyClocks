@@ -18,7 +18,7 @@ You don't have to open the app to start/stop/track your time!
 ### Download
 Check [Downloads][downloads] for Linux and Windows builds!
 
-<img src="/pyClocks/assets/v1_2_demo.png" alt="v.1.2">
+<img src="/pyClocks/assets/v1_3_demo.png" alt="v.1.3">
 
 
 [downloads]: /pyClocks/downloads

@@ -11,4 +11,5 @@ permalink: /release_process/
 6. upload builds to gdrive
 7. update ``downloads.markdown``
 8. create release post
-9. merge branch to ``main``
+9. update homepage screenshot
+10. merge branch to ``main``
