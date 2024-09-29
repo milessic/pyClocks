@@ -1,9 +1,9 @@
 - [ ] - open app for mouse left click on the tray
-- [ ] timers edit:
-    - [ ] add new timer
-    - [ ] edit timer
-    - [ ] remove timer
+- [x] timers edit:
+    - [x] add new timer
+    - [x] edit timer
+    - [x] remove timer
     - [ ] move positions
 - [ ] add timer tabs
-- [ ] add settings
-- [ ] make option to not close tray on user input
+- [x] add settings
+- [x] make option to not close tray on user input

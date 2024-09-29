@@ -3,6 +3,10 @@ layout: page
 title: Release Notes
 permalink: /progress/
 ---
+# v1.3
+- [x] - General
+    - [x] - make tray exepreience better
+        - [x] - Added 'Reset All' option in the tray 
 # v.1.2
 - [x] - General
     - [x] - Added always-on-top option (available from options)
@@ -44,6 +48,9 @@ permalink: /progress/
 ## General
 - [ ] - Add dropdown to open recent clock-sets
 - [ ] - Add warning time
+- [ ] - make tray exepreience better
+    - [ ] - better oppneing from tray for app
+    - [ ] - better oppneing from tray for settings
 
 ## Appearance
 - [ ] - add analog clock
@@ -52,6 +59,3 @@ permalink: /progress/
 - [ ] - save isActive
 - [ ] - add autoupdate
 - [ ] - add window shadow in frameless
-- [ ] - make tray exepreience better
-    - [ ] - better oppneing from tray for app
-    - [ ] - better oppneing from tray for settings
