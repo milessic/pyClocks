@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.3
+Type=Application
+Terminal=false
+Exec=~/Programs/pyClocks
+Name=pyClocks
+Comment=Time tracker tool
+Icon=~/Programs/pyClocks.ico

@@ -1,4 +1,7 @@
 from src.__init__ import VERSION
 
-print("_" + VERSION.replace(".","_"))
+def return_version():
+    return "_" + VERSION.replace(".","_")
+if __name__ == "__main__":
+    print(return_version())
 
