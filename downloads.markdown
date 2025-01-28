@@ -13,7 +13,7 @@ permalink: /downloads/
 - [exe][exe]
 
 ## MacOs - v1.3
-- [darwin][app]
+- [app][darwin]
 
 ## Compatiblity
 ### Windows
