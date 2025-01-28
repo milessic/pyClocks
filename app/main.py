@@ -1,6 +1,6 @@
 from src.app import ClocksApp
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFontDatabase, QFont
 import sys
 import platform
 import os
@@ -23,6 +23,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     font_id = QFontDatabase.addApplicationFont(font_path)
     font = QFontDatabase.applicationFontFamilies(font_id)[0]
+    font_as_font = QFont(font)
+    QApplication.setFont(font_as_font)
     if "--debug" in sys.argv:
         print(font_path)
     timers_path = f"{app_path}/default.json"

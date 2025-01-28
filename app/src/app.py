@@ -61,8 +61,11 @@ class ClocksApp(QMainWindow):
             nerd_font:str|None=None
             ):
         super().__init__()
+
+        # setup font
         self.app_started = False
         self.nerd_font = nerd_font
+
         self.edit_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "edit_icon.svg"))
         #self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.png"))
         self.settings_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), "settings_icon.svg"))
